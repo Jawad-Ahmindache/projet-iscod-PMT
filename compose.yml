@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  api:
+    build:
+      dockerfile: ./.docker/api.dockerfile
+    ports:
+      - "8080:8080"
+      - "5432:5432"
+    volumes:
+      - ./api:/app
+      - pgdata:/var/lib/postgresql/16/main
+    command: >
+      sh -c "cd /app &&
+             service postgresql start &&
+             chmod +x ./mvnw &&
+             mvn install &&
+             ./mvnw spring-boot:run"
+  frontend:
+    build:
+      dockerfile: ./.docker/frontend.dockerfile
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./frontend:/app
+    env_file:
+      - ./frontend/.env
+    command: >
+      sh -c "cd /app &&
+             npm install &&
+             ng serve --host 0.0.0.0 --poll 1"
+volumes:
+  pgdata:
