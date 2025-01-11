@@ -1,14 +1,18 @@
 package com.visiplus.pmt.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import java.time.LocalDateTime;
 
-@Data
 @Entity
 @Table(name = "project_members")
 public class ProjectMember {
+    public static final String ROLE_ADMIN = "admin";
+    public static final String ROLE_MEMBER = "member";
+    public static final String ROLE_OBSERVER = "observer";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "project_member_id")
     private Long id;
 
     @ManyToOne
@@ -22,20 +26,47 @@ public class ProjectMember {
     @Column(nullable = false)
     private String role;
 
-    @Column(name = "created_at")
-    private java.time.LocalDateTime createdAt;
+    @Column(name = "added_at")
+    private LocalDateTime addedAt;
 
-    @Column(name = "updated_at")
-    private java.time.LocalDateTime updatedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = java.time.LocalDateTime.now();
-        updatedAt = createdAt;
+    // Getters and Setters
+    public Long getId() {
+        return id;
     }
 
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = java.time.LocalDateTime.now();
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public LocalDateTime getAddedAt() {
+        return addedAt;
+    }
+
+    public void setAddedAt(LocalDateTime addedAt) {
+        this.addedAt = addedAt;
     }
 } 

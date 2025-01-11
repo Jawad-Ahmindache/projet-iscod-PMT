@@ -18,8 +18,7 @@ services:
       sh -c "cd /app &&
              service postgresql start &&
              chmod +x ./mvnw &&
-             ./mvnw clean install &&
-             ./mvnw spring-boot:run -Dspring-boot.run.jvmArguments='-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005'"
+             ./mvnw spring-boot:run"
   mailhog:
     image: mailhog/mailhog
     ports:

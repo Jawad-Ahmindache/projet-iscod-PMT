@@ -1,25 +1,21 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
-
-type AlertType = 'success' | 'error' | 'warning' | 'info';
+import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'app-alert',
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="alert" [class]="type" role="alert">
-      <div class="flex items-center gap-2">
-        <span class="icon" *ngIf="type === 'success'">✓</span>
-        <span class="icon" *ngIf="type === 'error'">✕</span>
-        <span class="icon" *ngIf="type === 'warning'">!</span>
-        <span class="icon" *ngIf="type === 'info'">i</span>
-        <ng-content></ng-content>
-      </div>
+    <div
+      *ngIf="message()"
+      class="fixed top-4 right-4 p-4 rounded-lg text-white"
+      [ngClass]="type() === 'error' ? 'bg-red-500' : 'bg-green-500'"
+    >
+      {{ message() }}
     </div>
   `,
-  styleUrls: ['./alert.styles.scss'],
 })
 export class AlertComponent {
-  @Input() type: AlertType = 'info';
+  message = input.required<string>();
+  type = input<'error' | 'success'>('error');
 }
