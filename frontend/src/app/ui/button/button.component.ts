@@ -1,15 +1,22 @@
+import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-button',
   standalone: true,
+  imports: [CommonModule],
   template: `
     <button
       [class]="'btn ' + variant + ' ' + size"
-      [disabled]="disabled"
+      [disabled]="isDisabled || isLoading"
       (click)="onClick.emit($event)"
+      [type]="type"
     >
+      @if (isLoading) {
+      <div class="loader"></div>
+      } @else {
       <ng-content></ng-content>
+      }
     </button>
   `,
   styles: [
@@ -26,6 +33,8 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
         font-size: var(--text-sm);
         font-weight: 500;
         gap: var(--spacing-2);
+        min-width: 100px;
+        width: 100%;
       }
 
       .primary {
@@ -76,12 +85,34 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
         opacity: 0.7;
         cursor: not-allowed;
       }
+
+      .loader {
+        width: 20px;
+        height: 20px;
+        border: 3px solid #ffffff;
+        border-bottom-color: transparent;
+        border-radius: 50%;
+        display: inline-block;
+        box-sizing: border-box;
+        animation: rotation 1s linear infinite;
+      }
+
+      @keyframes rotation {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
     `,
   ],
 })
 export class ButtonComponent {
   @Input() variant: 'primary' | 'secondary' | 'outline' = 'primary';
   @Input() size: 'sm' | 'md' | 'lg' = 'md';
-  @Input() disabled = false;
+  @Input() isDisabled = false;
+  @Input() isLoading = false;
+  @Input() type: 'button' | 'submit' | 'reset' = 'button';
   @Output() onClick = new EventEmitter<MouseEvent>();
 }

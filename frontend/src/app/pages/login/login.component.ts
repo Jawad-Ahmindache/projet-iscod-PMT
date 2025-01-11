@@ -5,11 +5,19 @@ import { RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { AuthActions } from '../../stores/auth/auth.actions';
 import { authFeature } from '../../stores/auth/auth.reducer';
+import { ButtonComponent } from '../../ui/button/button.component';
+import { InputComponent } from '../../ui/input/input.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterLink,
+    ButtonComponent,
+    InputComponent,
+  ],
   template: `
     <div class="text-center mb-8">
       <h1 class="text-2xl font-bold">Connexion</h1>
@@ -17,42 +25,46 @@ import { authFeature } from '../../stores/auth/auth.reducer';
     </div>
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-4">
-      <div>
-        <label class="block text-sm font-medium text-gray-700"
-          >Nom d'utilisateur</label
-        >
-        <input
-          type="text"
-          formControlName="username"
-          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-        />
-      </div>
+      <app-input
+        label="Nom d'utilisateur"
+        type="text"
+        formControlName="username"
+        [hasError]="
+          !!(
+            loginForm.get('username')?.errors &&
+            loginForm.get('username')?.touched
+          )
+        "
+        errorMessage="Le nom d'utilisateur est requis"
+      />
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700"
-          >Mot de passe</label
-        >
-        <input
-          type="password"
-          formControlName="password"
-          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-        />
-      </div>
+      <app-input
+        label="Mot de passe"
+        type="password"
+        formControlName="password"
+        [hasError]="
+          !!(
+            loginForm.get('password')?.errors &&
+            loginForm.get('password')?.touched
+          )
+        "
+        errorMessage="Le mot de passe est requis"
+      />
 
       <div class="flex flex-col gap-4">
-        <button
+        <app-button
           type="submit"
-          [disabled]="loginForm.invalid || (loading$ | async)"
-          class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
+          [isDisabled]="loginForm.invalid"
+          [isLoading]="!!(loading$ | async)"
         >
-          @if (loading$ | async) { Chargement... } @else { Se connecter }
-        </button>
+          Se connecter
+        </app-button>
 
         <a
           routerLink="/auth/register"
           class="text-center text-sm text-primary-600 hover:text-primary-500"
         >
-          Créer un compte
+          Pas encore de compte ? S'inscrire
         </a>
       </div>
     </form>
@@ -65,8 +77,8 @@ export class LoginComponent {
   loading$ = this.store.select(authFeature.selectLoading);
 
   loginForm = this.fb.group({
-    username: ['', [Validators.required]],
-    password: ['', [Validators.required]],
+    username: ['', Validators.required],
+    password: ['', Validators.required],
   });
 
   onSubmit(): void {
@@ -79,6 +91,8 @@ export class LoginComponent {
           },
         })
       );
+    } else {
+      this.loginForm.markAllAsTouched();
     }
   }
 }

@@ -1,88 +1,131 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-
-type InputSize = 'sm' | 'md' | 'lg';
-type InputType = 'text' | 'password' | 'email' | 'number';
+import { Component, Input, forwardRef } from '@angular/core';
+import {
+  ControlValueAccessor,
+  FormsModule,
+  NG_VALUE_ACCESSOR,
+} from '@angular/forms';
 
 @Component({
   selector: 'app-input',
   standalone: true,
   imports: [CommonModule, FormsModule],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => InputComponent),
+      multi: true,
+    },
+  ],
   template: `
-    <div class="input-container">
-      <label *ngIf="label" class="text-sm">{{ label }}</label>
+    <div class="input-group">
+      <label [for]="id" class="label">{{ label }}</label>
       <input
         [type]="type"
+        [id]="id"
+        [value]="value"
+        (input)="onInput($event)"
+        (blur)="onBlur()"
+        [class]="hasError ? 'input error' : 'input'"
         [placeholder]="placeholder"
-        [(ngModel)]="value"
-        [disabled]="disabled"
-        [class]="size"
       />
-      <small class="error text-xs" *ngIf="error">{{ error }}</small>
+      @if (hasError && errorMessage) {
+      <span class="error-message">{{ errorMessage }}</span>
+      }
     </div>
   `,
   styles: [
     `
-      .input-container {
+      .input-group {
         display: flex;
         flex-direction: column;
-        gap: var(--spacing-2);
+        gap: var(--spacing-1);
       }
 
-      label {
+      .label {
+        font-size: var(--text-sm);
         font-weight: 500;
-        color: var(--text);
+        color: var(--gray-700);
       }
 
-      input {
+      .input {
         padding: var(--spacing-2);
-        border: 1px solid var(--text-light);
+        border: 1px solid var(--gray-300);
         border-radius: var(--rounded-md);
         font-size: var(--text-sm);
-        background-color: var(--fond-1);
-        color: var(--text);
-        transition: border-color 0.3s ease;
+        transition: all 0.3s ease;
+        width: 100%;
+        background-color: white;
       }
 
-      input:focus {
+      .input:focus {
         outline: none;
         border-color: var(--primary);
+        box-shadow: 0 0 0 1px var(--primary);
       }
 
-      input:disabled {
-        background-color: var(--fond-2);
+      .input.error {
+        border-color: var(--error);
+      }
+
+      .input.error:focus {
+        box-shadow: 0 0 0 1px var(--error);
+      }
+
+      .input:disabled {
+        background-color: var(--gray-100);
         cursor: not-allowed;
       }
 
-      .sm {
-        padding: var(--spacing-1) var(--spacing-2);
+      .error-message {
         font-size: var(--text-xs);
-      }
-
-      .md {
-        padding: var(--spacing-2) var(--spacing-3);
-        font-size: var(--text-sm);
-      }
-
-      .lg {
-        padding: var(--spacing-3) var(--spacing-4);
-        font-size: var(--text-md);
-      }
-
-      .error {
-        color: #e74c3c;
+        color: var(--error);
+        margin-top: var(--spacing-1);
       }
     `,
   ],
 })
-export class InputComponent {
+export class InputComponent implements ControlValueAccessor {
   @Input() label = '';
+  @Input() type = 'text';
   @Input() placeholder = '';
-  @Input() type: InputType = 'text';
-  @Input() error = '';
-  @Input() size: InputSize = 'md';
-  @Input() disabled = false;
+  @Input() hasError = false;
+  @Input() errorMessage = '';
+  @Input() isDisabled = false;
 
+  id = `input-${Math.random().toString(36).substr(2, 9)}`;
   value = '';
+  touched = false;
+  disabled = false;
+
+  onChange = (value: string) => {};
+  onTouched = () => {};
+
+  writeValue(value: string): void {
+    this.value = value;
+  }
+
+  registerOnChange(fn: any): void {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn: any): void {
+    this.onTouched = fn;
+  }
+
+  setDisabledState(isDisabled: boolean): void {
+    this.disabled = isDisabled;
+    this.isDisabled = isDisabled;
+  }
+
+  onInput(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.value = value;
+    this.onChange(value);
+  }
+
+  onBlur(): void {
+    this.touched = true;
+    this.onTouched();
+  }
 }

@@ -1,5 +1,8 @@
 import { Routes } from '@angular/router';
 import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
+import { DesignKitComponent } from './pages/designkit/designkit.component';
+import { LoginComponent } from './pages/login/login.component';
+import { RegisterComponent } from './pages/register/register.component';
 
 export const routes: Routes = [
   {
@@ -8,15 +11,11 @@ export const routes: Routes = [
     children: [
       {
         path: 'login',
-        loadComponent: () =>
-          import('./pages/login/login.component').then((m) => m.LoginComponent),
+        component: LoginComponent,
       },
       {
         path: 'register',
-        loadComponent: () =>
-          import('./pages/register/register.component').then(
-            (m) => m.RegisterComponent
-          ),
+        component: RegisterComponent,
       },
       {
         path: '',
@@ -24,5 +23,14 @@ export const routes: Routes = [
         pathMatch: 'full',
       },
     ],
+  },
+  {
+    path: 'designkit', // designkit
+    component: DesignKitComponent,
+  },
+  {
+    path: '',
+    redirectTo: 'designkit',
+    pathMatch: 'full',
   },
 ];
