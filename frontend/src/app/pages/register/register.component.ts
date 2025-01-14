@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
-import { Store } from '@ngrx/store';
-import { AuthActions } from '../../stores/auth/auth.actions';
-import { authFeature } from '../../stores/auth/auth.reducer';
-import { ButtonComponent } from '../../ui/button/button.component';
-import { InputComponent } from '../../ui/input/input.component';
+import { Router, RouterLink } from '@angular/router';
+import { TuiButton, TuiError } from '@taiga-ui/core';
+import { TuiButtonLoading } from '@taiga-ui/kit';
+import { TuiInputModule } from '@taiga-ui/legacy';
+import { catchError, finalize, tap } from 'rxjs';
+import { AuthService } from '../../services/auth.service';
+import { AuthStore } from '../../services/store/auth.store';
 
 @Component({
   selector: 'app-register',
@@ -15,8 +16,10 @@ import { InputComponent } from '../../ui/input/input.component';
     CommonModule,
     ReactiveFormsModule,
     RouterLink,
-    ButtonComponent,
-    InputComponent,
+    TuiButton,
+    TuiButtonLoading,
+    TuiError,
+    TuiInputModule,
   ],
   template: `
     <div class="text-center mb-8">
@@ -25,57 +28,58 @@ import { InputComponent } from '../../ui/input/input.component';
     </div>
 
     <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-4">
-      <app-input
-        label="Nom d'utilisateur"
-        type="text"
-        formControlName="username"
-        [hasError]="
-          !!(
-            registerForm.get('username')?.errors &&
-            registerForm.get('username')?.touched
-          )
-        "
-        errorMessage="Le nom d'utilisateur doit contenir au moins 3 caractères"
-      />
+      <div class="tui-form__row">
+        <tui-input formControlName="username">
+          Nom d'utilisateur
+          <input tuiTextfieldLegacy />
+        </tui-input>
+        @if (registerForm.get('username')?.errors &&
+        registerForm.get('username')?.touched) {
+        <tui-error
+          >Le nom d'utilisateur doit contenir au moins 3 caractères</tui-error
+        >
+        }
+      </div>
 
-      <app-input
-        label="Email"
-        type="email"
-        formControlName="email"
-        [hasError]="
-          !!(
-            registerForm.get('email')?.errors &&
-            registerForm.get('email')?.touched
-          )
-        "
-        errorMessage="L'email n'est pas valide"
-      />
+      <div class="tui-form__row">
+        <tui-input formControlName="email">
+          Email
+          <input tuiTextfieldLegacy type="email" />
+        </tui-input>
+        @if (registerForm.get('email')?.errors &&
+        registerForm.get('email')?.touched) {
+        <tui-error>L'email n'est pas valide</tui-error>
+        }
+      </div>
 
-      <app-input
-        label="Mot de passe"
-        type="password"
-        formControlName="password"
-        [hasError]="
-          !!(
-            registerForm.get('password')?.errors &&
-            registerForm.get('password')?.touched
-          )
-        "
-        errorMessage="Le mot de passe doit contenir au moins 6 caractères"
-      />
+      <div class="tui-form__row">
+        <tui-input formControlName="password">
+          Mot de passe
+          <input tuiTextfieldLegacy type="password" />
+        </tui-input>
+        @if (registerForm.get('password')?.errors &&
+        registerForm.get('password')?.touched) {
+        <tui-error
+          >Le mot de passe doit contenir au moins 6 caractères</tui-error
+        >
+        }
+      </div>
 
       <div class="flex flex-col gap-4">
-        <app-button
+        <button
+          tuiButton
           type="submit"
-          [isDisabled]="registerForm.invalid"
-          [isLoading]="!!(loading$ | async)"
+          appearance="primary"
+          [loading]="store.loading"
+          [disabled]="registerForm.invalid"
+          class="tui-form__button"
         >
           S'inscrire
-        </app-button>
+        </button>
 
         <a
           routerLink="/auth/login"
-          class="text-center text-sm text-primary-600 hover:text-primary-500"
+          class="text-center text-sm text-tui-text-02 hover:text-tui-text-01"
         >
           Déjà un compte ? Se connecter
         </a>
@@ -85,9 +89,9 @@ import { InputComponent } from '../../ui/input/input.component';
 })
 export class RegisterComponent {
   private fb = inject(FormBuilder);
-  private store = inject(Store);
-
-  loading$ = this.store.select(authFeature.selectLoading);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  protected store = inject(AuthStore);
 
   registerForm = this.fb.group({
     username: ['', [Validators.required, Validators.minLength(3)]],
@@ -97,15 +101,29 @@ export class RegisterComponent {
 
   onSubmit(): void {
     if (this.registerForm.valid) {
-      this.store.dispatch(
-        AuthActions.register({
-          request: this.registerForm.value as {
+      this.store.setLoading(true);
+      this.authService
+        .register(
+          this.registerForm.value as {
             username: string;
             email: string;
             password: string;
-          },
-        })
-      );
+          }
+        )
+        .pipe(
+          tap((response) => {
+            this.store.setAuth(response);
+            this.router.navigate(['/']);
+          }),
+          catchError((error) => {
+            this.store.setError(
+              error.error.message || 'Une erreur est survenue'
+            );
+            throw error;
+          }),
+          finalize(() => this.store.setLoading(false))
+        )
+        .subscribe();
     } else {
       this.registerForm.markAllAsTouched();
     }

@@ -1,0 +1,31 @@
+import type { AfterViewInit, OnChanges } from '@angular/core';
+import { EventEmitter } from '@angular/core';
+import type { TuiComparator } from '@taiga-ui/addon-table/types';
+import type { TuiTextfieldOptions } from '@taiga-ui/core/components/textfield';
+import type { TuiSizeL, TuiSizeS } from '@taiga-ui/core/types';
+import { Subject } from 'rxjs';
+import { TuiSortDirection } from '../table.options';
+import * as i0 from "@angular/core";
+import * as i1 from "./stuck.directive";
+export declare class TuiTableDirective<T extends Partial<Record<keyof T, any>>> implements AfterViewInit, TuiTextfieldOptions, OnChanges {
+    private readonly options;
+    private readonly cdr;
+    protected readonly nothing: undefined;
+    columns: ReadonlyArray<string | keyof T>;
+    direction: TuiSortDirection;
+    readonly directionChange: EventEmitter<TuiSortDirection>;
+    readonly sorterChange: EventEmitter<TuiComparator<T> | null>;
+    readonly appearance: import("@angular/core").WritableSignal<string>;
+    readonly size: import("@angular/core").WritableSignal<"m" | "l" | "s">;
+    readonly cleaner: import("@angular/core").WritableSignal<boolean>;
+    readonly change$: Subject<void>;
+    set sizeSetter(size: TuiSizeL | TuiSizeS);
+    sorter: TuiComparator<T>;
+    updateSorterAndDirection(sorter: TuiComparator<T> | null): void;
+    ngOnChanges(): void;
+    ngAfterViewInit(): void;
+    updateSorter(sorter: TuiComparator<T> | null): void;
+    private updateDirection;
+    static ɵfac: i0.ɵɵFactoryDeclaration<TuiTableDirective<any>, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<TuiTableDirective<any>, "table[tuiTable]", never, { "columns": { "alias": "columns"; "required": false; }; "direction": { "alias": "direction"; "required": false; }; "sizeSetter": { "alias": "size"; "required": false; }; "sorter": { "alias": "sorter"; "required": false; }; }, { "directionChange": "directionChange"; "sorterChange": "sorterChange"; }, never, never, true, [{ directive: typeof i1.TuiStuck; inputs: {}; outputs: {}; }]>;
+}

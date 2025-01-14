@@ -1,0 +1,35 @@
+import type { QueryList } from '@angular/core';
+import { EventEmitter, TemplateRef } from '@angular/core';
+import type { TuiSwipeDirection } from '@taiga-ui/cdk/directives/swipe';
+import * as i0 from "@angular/core";
+import * as i1 from "./carousel.directive";
+export declare class TuiCarouselComponent {
+    private readonly el;
+    private readonly cdr;
+    private readonly isMobile;
+    private readonly directive;
+    private translate;
+    protected readonly items: QueryList<TemplateRef<Record<string, unknown>>>;
+    protected transitioned: boolean;
+    protected index: number;
+    draggable: boolean;
+    itemsCount: number;
+    readonly indexChange: EventEmitter<number>;
+    set indexSetter(index: number);
+    next(): void;
+    prev(): void;
+    protected get transform(): string;
+    protected getStyle(itemsCount: number): Partial<CSSStyleDeclaration>;
+    protected onTransitioned(transitioned: boolean): void;
+    protected isDisabled(index: number): boolean;
+    protected onIntersection({ intersectionRatio }: IntersectionObserverEntry, index: number): void;
+    protected onScroll(delta: number): void;
+    protected onPan(x: number): void;
+    protected onSwipe(direction: TuiSwipeDirection): void;
+    protected onAutoscroll(): void;
+    private get computedTranslate();
+    private get computedDraggable();
+    private updateIndex;
+    static ɵfac: i0.ɵɵFactoryDeclaration<TuiCarouselComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TuiCarouselComponent, "tui-carousel", never, { "draggable": { "alias": "draggable"; "required": false; }; "itemsCount": { "alias": "itemsCount"; "required": false; }; "indexSetter": { "alias": "index"; "required": false; }; }, { "indexChange": "indexChange"; }, ["items"], never, true, [{ directive: typeof i1.TuiCarouselDirective; inputs: { "duration": "duration"; }; outputs: {}; }]>;
+}

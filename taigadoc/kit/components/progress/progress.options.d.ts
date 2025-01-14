@@ -1,0 +1,9 @@
+import type { Provider } from '@angular/core';
+import type { TuiSizeXXL, TuiSizeXXS } from '@taiga-ui/core/types';
+export interface TuiProgressOptions {
+    readonly color: string | null;
+    readonly size: TuiSizeXXL | TuiSizeXXS;
+}
+export declare const TUI_PROGRESS_DEFAULT_OPTIONS: TuiProgressOptions;
+export declare const TUI_PROGRESS_OPTIONS: import("@angular/core").InjectionToken<TuiProgressOptions>;
+export declare function tuiProgressOptionsProvider(options: Partial<TuiProgressOptions>): Provider;

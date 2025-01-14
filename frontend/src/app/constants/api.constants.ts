@@ -4,5 +4,6 @@ export const AUTH_API = {
   auth: {
     login: `${API_URL}/auth/login`,
     register: `${API_URL}/auth/register`,
+    me: `${API_URL}/auth/me`,
   },
 };

@@ -1,0 +1,9 @@
+import * as i0 from "@angular/core";
+export declare class TuiProgressColorSegments {
+    private readonly colors$;
+    private readonly el;
+    protected readonly color: import("@angular/core").Signal<string | undefined>;
+    set colors(colors: string[]);
+    static ɵfac: i0.ɵɵFactoryDeclaration<TuiProgressColorSegments, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<TuiProgressColorSegments, "progress[tuiProgressBar][tuiProgressColorSegments]", never, { "colors": { "alias": "tuiProgressColorSegments"; "required": false; }; }, {}, never, never, true, never>;
+}

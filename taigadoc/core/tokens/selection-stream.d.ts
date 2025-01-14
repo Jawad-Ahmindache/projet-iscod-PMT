@@ -1,0 +1,5 @@
+import type { Observable } from 'rxjs';
+/**
+ * A stream of possible selection changes
+ */
+export declare const TUI_SELECTION_STREAM: import("@angular/core").InjectionToken<Observable<unknown>>;

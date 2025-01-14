@@ -7,6 +7,7 @@ services:
     ports:
       - "8080:8080"
       - "5432:5432"
+      - "35729:35729"
     environment:
       - SPRING_DEVTOOLS_REMOTE_SECRET=mysecret
       - SPRING_DEVTOOLS_RESTART_ENABLED=true
@@ -18,7 +19,7 @@ services:
       sh -c "cd /app &&
              service postgresql start &&
              chmod +x ./mvnw &&
-             ./mvnw spring-boot:run"
+             ./mvnw spring-boot:run -Dspring-boot.run.skipTests=true"
   mailhog:
     image: mailhog/mailhog
     ports:

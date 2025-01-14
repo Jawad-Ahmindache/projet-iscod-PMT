@@ -10,6 +10,7 @@ import com.visiplus.pmt.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,26 +25,28 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
 
     public AuthResponse login(LoginRequest request) {
-        authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-        );
+        var user = userRepository.findByEmail(request.getEmail())
+            .orElseThrow(() -> new BadCredentialsException("Identifiants invalides"));
 
-        var user = userRepository.findByUsername(request.getUsername())
-            .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
-        
-        var jwt = jwtService.generateToken(user);
-        
-        return new AuthResponse(jwt, new UserDto(user.getId(), user.getUsername(), user.getEmail()));
+        try {
+            authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                    request.getEmail(),
+                    request.getPassword()
+                )
+            );
+            
+            var jwt = jwtService.generateToken(user);
+            return new AuthResponse(jwt, new UserDto(user.getId(), user.getUsername(), user.getEmail()));
+        } catch (BadCredentialsException e) {
+            throw new BadCredentialsException("Identifiants invalides");
+        }
     }
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
-        if (userRepository.existsByUsername(request.getUsername())) {
-            throw new IllegalArgumentException("Username is already taken");
-        }
-
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalArgumentException("Email is already in use");
+            throw new IllegalArgumentException("Cet email est déjà utilisé");
         }
 
         var user = new User();
@@ -52,7 +55,6 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         userRepository.save(user);
-
         var jwt = jwtService.generateToken(user);
         
         return new AuthResponse(jwt, new UserDto(user.getId(), user.getUsername(), user.getEmail()));

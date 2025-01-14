@@ -6,7 +6,6 @@ import {
   AuthResponse,
   LoginRequest,
   RegisterRequest,
-  User,
 } from '../models/auth.interface';
 
 @Injectable({
@@ -23,26 +22,7 @@ export class AuthService {
     return this.http.post<AuthResponse>(AUTH_API.auth.register, request);
   }
 
-  setAuth(response: AuthResponse): void {
-    localStorage.setItem('token', response.token);
-    localStorage.setItem('user', JSON.stringify(response.user));
-  }
-
-  getToken(): string | null {
-    return localStorage.getItem('token');
-  }
-
-  getUser(): User | null {
-    const user = localStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
-  }
-
-  clearAuth(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-  }
-
-  isAuthenticated(): boolean {
-    return !!this.getToken();
+  getCurrentUser(): Observable<AuthResponse> {
+    return this.http.get<AuthResponse>(AUTH_API.auth.me);
   }
 }

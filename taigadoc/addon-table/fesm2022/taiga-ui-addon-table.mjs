@@ -1,0 +1,9 @@
+export * from '@taiga-ui/addon-table/components';
+export * from '@taiga-ui/addon-table/directives';
+export * from '@taiga-ui/addon-table/tokens';
+export * from '@taiga-ui/addon-table/types';
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+//# sourceMappingURL=taiga-ui-addon-table.mjs.map
