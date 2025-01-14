@@ -1,7 +1,0 @@
-import type { Provider, Type } from '@angular/core';
-import type { TuiRectAccessor } from '@taiga-ui/core/classes';
-/**
- * Viewport accessor
- */
-export declare const TUI_VIEWPORT: import("@angular/core").InjectionToken<TuiRectAccessor>;
-export declare function tuiAsViewport(accessor: Type<TuiRectAccessor>): Provider;

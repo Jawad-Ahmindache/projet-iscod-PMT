@@ -1,8 +1,0 @@
-export * from '@taiga-ui/addon-table/components/reorder';
-export * from '@taiga-ui/addon-table/components/table';
-export * from '@taiga-ui/addon-table/components/table-pagination';
-
-/**
- * Generated bundle index. Do not edit.
- */
-//# sourceMappingURL=taiga-ui-addon-table-components.mjs.map

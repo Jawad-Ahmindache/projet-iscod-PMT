@@ -1,6 +1,0 @@
-export * from '@taiga-ui/addon-table/directives/table-filters';
-
-/**
- * Generated bundle index. Do not edit.
- */
-//# sourceMappingURL=taiga-ui-addon-table-directives.mjs.map
