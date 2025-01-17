@@ -1,29 +1,60 @@
 package com.visiplus.pmt.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
 @Table(name = "tasks")
+@Data
+@NoArgsConstructor
 public class Task {
-    public static final String STATUS_TODO = "to_do";
-    public static final String STATUS_IN_PROGRESS = "in_progress";
-    public static final String STATUS_DONE = "done";
+    public enum Status {
+        TODO(0),
+        IN_PROGRESS(1),
+        COMPLETED(2);
 
-    public static final String PRIORITY_LOW = "low";
-    public static final String PRIORITY_MEDIUM = "medium";
-    public static final String PRIORITY_HIGH = "high";
+        private final int value;
+
+        Status(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+    }
+
+    public enum Priority {
+        LOW(0),
+        MEDIUM(1),
+        HIGH(2);
+
+        private final int value;
+
+        Priority(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "task_id")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assigned_user_id", nullable = true)
+    private User assignedUser;
 
     @Column(nullable = false)
     private String name;
@@ -33,11 +64,13 @@ public class Task {
     @Column(name = "due_date")
     private LocalDate dueDate;
 
+    @Enumerated(EnumType.ORDINAL)
     @Column(nullable = false)
-    private String priority;
+    private Priority priority;
 
+    @Enumerated(EnumType.ORDINAL)
     @Column(nullable = false)
-    private String status = STATUS_TODO;
+    private Status status = Status.TODO;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -46,99 +79,7 @@ public class Task {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "task")
-    private Set<AssignedTask> assignedUsers;
-
-    @OneToMany(mappedBy = "task")
     private Set<TaskHistory> history;
-
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Project getProject() {
-        return project;
-    }
-
-    public void setProject(Project project) {
-        this.project = project;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public LocalDate getDueDate() {
-        return dueDate;
-    }
-
-    public void setDueDate(LocalDate dueDate) {
-        this.dueDate = dueDate;
-    }
-
-    public String getPriority() {
-        return priority;
-    }
-
-    public void setPriority(String priority) {
-        this.priority = priority;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public Set<AssignedTask> getAssignedUsers() {
-        return assignedUsers;
-    }
-
-    public void setAssignedUsers(Set<AssignedTask> assignedUsers) {
-        this.assignedUsers = assignedUsers;
-    }
-
-    public Set<TaskHistory> getHistory() {
-        return history;
-    }
-
-    public void setHistory(Set<TaskHistory> history) {
-        this.history = history;
-    }
 
     @PrePersist
     protected void onCreate() {

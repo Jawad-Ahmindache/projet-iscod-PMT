@@ -25,21 +25,21 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
 
     public AuthResponse login(LoginRequest request) {
-        var user = userRepository.findByEmail(request.getEmail())
-            .orElseThrow(() -> new BadCredentialsException("Identifiants invalides"));
+       
 
         try {
+            var user = userRepository.findByEmail(request.getEmail())
+            .orElseThrow(() -> new BadCredentialsException("Identifiants invalides"));
             authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                     request.getEmail(),
                     request.getPassword()
                 )
             );
-            
             var jwt = jwtService.generateToken(user);
             return new AuthResponse(jwt, new UserDto(user.getId(), user.getUsername(), user.getEmail()));
-        } catch (BadCredentialsException e) {
-            throw new BadCredentialsException("Identifiants invalides");
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Identifiants invalides");
         }
     }
 

@@ -21,70 +21,8 @@ import { AuthStore } from '../../services/store/auth.store';
     TuiError,
     TuiInputModule,
   ],
-  template: `
-    <section class="login-container flex flex-col items-center justify-center">
-      <div class="text-center mb-8">
-        <h1 class="text-2xl font-bold">Connexion</h1>
-        <p class="text-gray-600">Connectez-vous à votre compte</p>
-      </div>
-
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-4">
-        <div class="tui-form__row">
-          <tui-input formControlName="email">
-            Email
-            <input tuiTextfieldLegacy type="email" />
-          </tui-input>
-          @if (loginForm.get('email')?.errors &&
-          loginForm.get('email')?.touched) {
-          <tui-error>L'email est requis</tui-error>
-          }
-        </div>
-
-        <div class="tui-form__row">
-          <tui-input formControlName="password">
-            Mot de passe
-            <input tuiTextfieldLegacy type="password" />
-          </tui-input>
-          @if (loginForm.get('password')?.errors &&
-          loginForm.get('password')?.touched) {
-          <tui-error>Le mot de passe est requis</tui-error>
-          }
-        </div>
-
-        <div class="flex flex-col gap-4">
-          <button
-            tuiButton
-            type="submit"
-            appearance="primary"
-            [loading]="store.loading"
-            [disabled]="loginForm.invalid"
-            class="tui-form__button"
-          >
-            Se connecter
-          </button>
-
-          <a
-            routerLink="/auth/register"
-            class="text-center text-sm text-tui-text-02 hover:text-tui-text-01"
-          >
-            Pas encore de compte ? S'inscrire
-          </a>
-        </div>
-      </form>
-    </section>
-  `,
-  styles: [
-    `
-      .login-container {
-        height: 100vh;
-      }
-      .login-container form {
-        display: flex;
-        flex-direction: column;
-        gap: 0.4rem;
-      }
-    `,
-  ],
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent {
   private fb = inject(FormBuilder);

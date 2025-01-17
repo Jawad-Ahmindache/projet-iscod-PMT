@@ -1,72 +1,54 @@
 package com.visiplus.pmt.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "project_members")
+@Table(name = "project_members", 
+       uniqueConstraints = @UniqueConstraint(columnNames = {"project_id", "user_id"}))
+@Data
+@NoArgsConstructor
 public class ProjectMember {
-    public static final String ROLE_ADMIN = "admin";
-    public static final String ROLE_MEMBER = "member";
-    public static final String ROLE_OBSERVER = "observer";
+    public enum Role {
+        ADMIN(0),    // Peut tout faire dans le projet
+        MEMBER(1),   // Peut créer et modifier des tâches
+        OBSERVER(2); // Peut uniquement voir les tâches
+
+        private final int value;
+
+        Role(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "project_member_id")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Enumerated(EnumType.ORDINAL)
     @Column(nullable = false)
-    private String role;
+    private Role role;
 
-    @Column(name = "added_at")
-    private LocalDateTime addedAt;
+    @Column(name = "joined_at", nullable = false)
+    private LocalDateTime joinedAt;
 
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Project getProject() {
-        return project;
-    }
-
-    public void setProject(Project project) {
-        this.project = project;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public LocalDateTime getAddedAt() {
-        return addedAt;
-    }
-
-    public void setAddedAt(LocalDateTime addedAt) {
-        this.addedAt = addedAt;
+    @PrePersist
+    protected void onCreate() {
+        joinedAt = LocalDateTime.now();
     }
 } 
