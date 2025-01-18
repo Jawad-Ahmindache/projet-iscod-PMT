@@ -1,4 +1,3 @@
-import { AsyncPipe } from '@angular/common';
 import { Component, effect, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { TuiAlertService } from '@taiga-ui/core';
@@ -7,7 +6,7 @@ import { AuthStore } from '../../services/store/auth.store';
 @Component({
   selector: 'app-auth-layout',
   standalone: true,
-  imports: [RouterOutlet, AsyncPipe],
+  imports: [RouterOutlet],
   template: `
     <div
       class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8"
