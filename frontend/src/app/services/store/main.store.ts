@@ -1,25 +1,40 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MainStore {
-  private readonly _error = signal<string | null>(null);
-  private readonly _success = signal<string | null>(null);
+  private _loading = signal(false);
+  private _error = signal<string | null>(null);
+  private _success = signal<string | null>(null);
 
-  readonly error = computed(() => this._error());
-  readonly success = computed(() => this._success());
+  get loading() {
+    return this._loading();
+  }
+
+  get error() {
+    return this._error();
+  }
+
+  get success() {
+    return this._success();
+  }
+
+  setLoading(loading: boolean) {
+    this._loading.set(loading);
+  }
 
   setError(error: string | null) {
     this._error.set(error);
+    if (error) {
+      setTimeout(() => this._error.set(null), 3000);
+    }
   }
 
-  setSuccess(message: string | null) {
-    this._success.set(message);
-  }
-
-  clearMessages() {
-    this._error.set(null);
-    this._success.set(null);
+  setSuccess(success: string | null) {
+    this._success.set(success);
+    if (success) {
+      setTimeout(() => this._success.set(null), 3000);
+    }
   }
 }

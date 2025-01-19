@@ -1,13 +1,13 @@
-import { AsyncPipe } from '@angular/common';
 import { Component, effect, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { TuiAlertService } from '@taiga-ui/core';
 import { MainStore } from '../../services/store/main.store';
+import { SidebarComponent } from './sidebar/sidebar.component';
 
 @Component({
   selector: 'app-main-layout',
   standalone: true,
-  imports: [RouterOutlet, AsyncPipe],
+  imports: [RouterOutlet, SidebarComponent],
   templateUrl: './main-layout.component.html',
   styleUrls: ['./main-layout.component.scss'],
 })
@@ -17,7 +17,7 @@ export class MainLayoutComponent {
 
   constructor() {
     effect(() => {
-      const error = this.store.error();
+      const error = this.store.error;
       if (error) {
         this.alertService
           .open(error, {
@@ -30,7 +30,7 @@ export class MainLayoutComponent {
     });
 
     effect(() => {
-      const success = this.store.success();
+      const success = this.store.success;
       if (success) {
         this.alertService
           .open(success, {

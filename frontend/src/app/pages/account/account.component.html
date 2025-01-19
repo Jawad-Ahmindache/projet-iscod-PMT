@@ -1,0 +1,107 @@
+<div class="container mx-auto p-4">
+  <h1 class="text-2xl font-bold mb-6">Mon compte</h1>
+
+  @if (store.user) {
+  <div class="bg-white p-6 rounded-lg shadow-sm max-w-lg">
+    <form [formGroup]="accountForm" (ngSubmit)="onSubmit()" class="tui-form">
+      <!-- Username -->
+      <div class="tui-form__row">
+        <tui-input formControlName="username">
+          Nom d'utilisateur
+          <input
+            tuiTextfieldLegacy
+            type="text"
+            placeholder="Entrez votre nom d'utilisateur"
+          />
+        </tui-input>
+        @if (accountForm.get('username')?.errors?.['minlength'] &&
+        accountForm.get('username')?.touched) {
+        <tui-error
+          >Le nom d'utilisateur doit contenir au moins 3 caractères</tui-error
+        >
+        } @if (accountForm.get('username')?.errors?.['maxlength'] &&
+        accountForm.get('username')?.touched) {
+        <tui-error
+          >Le nom d'utilisateur ne doit pas dépasser 50 caractères</tui-error
+        >
+        }
+      </div>
+
+      <!-- Email -->
+      <div class="tui-form__row">
+        <tui-input formControlName="email">
+          Email
+          <input
+            tuiTextfieldLegacy
+            type="email"
+            placeholder="Entrez votre email"
+          />
+        </tui-input>
+        @if (accountForm.get('email')?.errors?.['email'] &&
+        accountForm.get('email')?.touched) {
+        <tui-error>L'email n'est pas valide</tui-error>
+        }
+      </div>
+
+      <!-- New Password -->
+      <div class="tui-form__row">
+        <tui-input formControlName="password">
+          Nouveau mot de passe
+          <input
+            tuiTextfieldLegacy
+            type="password"
+            placeholder="Entrez votre nouveau mot de passe"
+          />
+        </tui-input>
+        @if (accountForm.get('password')?.errors?.['minlength'] &&
+        accountForm.get('password')?.touched) {
+        <tui-error
+          >Le mot de passe doit contenir au moins 6 caractères</tui-error
+        >
+        } @if (accountForm.get('password')?.errors?.['maxlength'] &&
+        accountForm.get('password')?.touched) {
+        <tui-error
+          >Le mot de passe ne doit pas dépasser 40 caractères</tui-error
+        >
+        }
+      </div>
+
+      <!-- Current Password -->
+      <div class="tui-form__row">
+        <tui-input formControlName="currentPassword">
+          Mot de passe actuel
+          <input
+            tuiTextfieldLegacy
+            type="password"
+            placeholder="Entrez votre mot de passe actuel"
+          />
+        </tui-input>
+        @if (accountForm.get('currentPassword')?.errors?.['required'] &&
+        accountForm.get('currentPassword')?.touched) {
+        <tui-error>Le mot de passe actuel est requis</tui-error>
+        }
+      </div>
+
+      <!-- Error and Success Messages -->
+      @if (error) {
+      <div class="tui-form__error">{{ error }}</div>
+      } @if (success) {
+      <div class="tui-form__success">{{ success }}</div>
+      }
+
+      <!-- Submit Button -->
+      <button
+        tuiButton
+        type="submit"
+        [loading]="loading"
+        [disabled]="!accountForm.valid || loading"
+        class="tui-form__button"
+        appearance="primary"
+        size="l"
+      >
+        Mettre à jour
+      </button>
+    </form>
+  </div>
+  }
+</div>

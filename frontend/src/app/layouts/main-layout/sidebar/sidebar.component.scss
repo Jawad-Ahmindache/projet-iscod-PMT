@@ -1,0 +1,59 @@
+:host {
+  display: block;
+  height: 100%;
+  background: var(--tui-background-base-alt);
+  height: 100vh;
+  position: relative;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-right: 1px solid var(--tui-base-03);
+}
+
+.sidebar-header {
+  padding: var(--spacing-6);
+  border-bottom: 1px solid var(--tui-base-03);
+}
+
+.sidebar-content {
+  flex: 1;
+  padding: var(--spacing-4);
+}
+
+.nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-3);
+  border-radius: var(--rounded-lg);
+  color: var(--text);
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: var(--fond-2);
+    color: var(--primary);
+  }
+
+  &.active {
+    background: var(--fond-2);
+    color: var(--primary);
+  }
+}
+
+.nav-icon {
+  font-size: var(--text-xl);
+}
+
+.sidebar-footer {
+  padding: var(--spacing-4);
+  border-top: 1px solid var(--tui-base-03);
+}

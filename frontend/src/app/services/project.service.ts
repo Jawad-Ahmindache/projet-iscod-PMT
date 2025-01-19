@@ -1,61 +1,32 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { environment } from '../../environments/environment';
-
-export interface Project {
-  id: number;
-  name: string;
-  description: string;
-  startDate: string;
-  memberCount: number;
-}
-
-export interface PageResponse<T> {
-  content: T[];
-  totalElements: number;
-  totalPages: number;
-  size: number;
-  number: number;
-}
+import { Observable } from 'rxjs';
+import { AUTH_API } from '../constants/api.constants';
+import { Project } from '../models/project.interface';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ProjectService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/api/projects`;
 
-  async getProjects(
-    page = 1,
-    size = 10,
-    sort?: { key: string; direction: 'asc' | 'desc' }
-  ): Promise<PageResponse<Project>> {
-    const params = new URLSearchParams({
-      page: (page - 1).toString(),
-      size: size.toString(),
-    });
-
-    if (sort) params.append('sort', `${sort.key},${sort.direction}`);
-
-    const response = await this.http
-      .get<PageResponse<Project>>(`${this.apiUrl}?${params.toString()}`)
-      .toPromise();
-
-    if (!response)
-      throw new Error('Erreur lors de la récupération des projets');
-
-    return response;
+  getProjects(): Observable<Project[]> {
+    return this.http.get<Project[]>(AUTH_API.projects.list);
   }
 
-  async getProjectById(id: number): Promise<Project> {
-    const response = await this.http
-      .get<Project>(`${this.apiUrl}/${id}`)
-      .toPromise();
+  getProject(id: number): Observable<Project> {
+    return this.http.get<Project>(AUTH_API.projects.get(id));
+  }
 
-    if (!response) {
-      throw new Error('Projet non trouvé');
-    }
+  createProject(project: Partial<Project>): Observable<Project> {
+    return this.http.post<Project>(AUTH_API.projects.create, project);
+  }
 
-    return response;
+  updateProject(id: number, project: Partial<Project>): Observable<Project> {
+    return this.http.put<Project>(AUTH_API.projects.update(id), project);
+  }
+
+  deleteProject(id: number): Observable<void> {
+    return this.http.delete<void>(AUTH_API.projects.delete(id));
   }
 }

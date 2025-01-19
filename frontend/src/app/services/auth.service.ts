@@ -2,11 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AUTH_API } from '../constants/api.constants';
-import {
-  AuthResponse,
-  LoginRequest,
-  RegisterRequest,
-} from '../models/auth.interface';
+import { LoginRequest } from '../models/auth.interface';
+import { User } from '../models/user.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -14,15 +11,15 @@ import {
 export class AuthService {
   private http = inject(HttpClient);
 
-  login(request: LoginRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(AUTH_API.auth.login, request);
+  login(credentials: LoginRequest): Observable<any> {
+    return this.http.post(AUTH_API.auth.login, credentials);
   }
 
-  register(request: RegisterRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(AUTH_API.auth.register, request);
+  register(user: any): Observable<any> {
+    return this.http.post(AUTH_API.auth.register, user);
   }
 
-  getCurrentUser(): Observable<AuthResponse> {
-    return this.http.get<AuthResponse>(AUTH_API.auth.me);
+  me(): Observable<User> {
+    return this.http.get<User>(AUTH_API.auth.me);
   }
 }

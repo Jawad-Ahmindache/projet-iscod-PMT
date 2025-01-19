@@ -1,0 +1,49 @@
+<nav class="sidebar">
+  <!-- Header -->
+  <div class="sidebar-header">
+    <div class="flex items-center gap-3">
+      <tui-avatar
+        size="m"
+        [round]="true"
+        text="PMT"
+        src="https://play-lh.googleusercontent.com/_AZCbg39DTuk8k3DiPRASr9EwyW058pOfzvAu1DsfN9ygtbOlbuucmXaHJi5ooYbokQX=w240-h480-rw"
+        class="bg-primary text-fond-1"
+      ></tui-avatar>
+      <h1 class="text-xl font-bold text-text">PMT</h1>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="sidebar-content">
+    <div class="nav-links">
+      <a
+        routerLink="/"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="nav-link"
+      >
+        <tui-icon icon="@tui.home" class="nav-icon"></tui-icon>
+        <span>Accueil</span>
+      </a>
+
+      <a routerLink="/account" routerLinkActive="active" class="nav-link">
+        <tui-icon icon="@tui.users" class="nav-icon"></tui-icon>
+        <span>Mon compte</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="sidebar-footer">
+    <button
+      tuiButton
+      type="button"
+      appearance="accent"
+      size="s"
+      (click)="logout()"
+    >
+      <tui-icon icon="@tui.log-out" class="nav-icon"></tui-icon>
+      <span>Déconnexion</span>
+    </button>
+  </div>
+</nav>
