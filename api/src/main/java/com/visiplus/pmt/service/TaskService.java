@@ -31,7 +31,6 @@ public class TaskService {
         ProjectMember projectMember = projectMemberRepository.findByProjectAndUser(project, creator)
             .orElseThrow(() -> new PermissionDeniedException("Vous n'êtes pas membre de ce projet"));
 
-        // Vérifie que l'utilisateur a le rôle ADMIN ou MEMBER
         roleService.hasRole(projectMember, new ProjectMember.Role[]{
             ProjectMember.Role.ADMIN,
             ProjectMember.Role.MEMBER
@@ -44,7 +43,6 @@ public class TaskService {
 
         Task savedTask = taskRepository.save(task);
 
-        // Crée une entrée dans l'historique
         TaskHistory history = new TaskHistory();
         history.setTask(savedTask);
         history.setChangedBy(creator);
@@ -63,20 +61,17 @@ public class TaskService {
         ProjectMember projectMember = projectMemberRepository.findByProjectAndUser(task.getProject(), editor)
             .orElseThrow(() -> new PermissionDeniedException("Vous n'êtes pas membre de ce projet"));
 
-        // Vérifie que l'utilisateur a le rôle ADMIN ou MEMBER
         roleService.hasRole(projectMember, new ProjectMember.Role[]{
             ProjectMember.Role.ADMIN,
             ProjectMember.Role.MEMBER
         });
 
-        // Sauvegarde l'ancien état pour l'historique
         Task.Status oldStatus = task.getStatus();
         Task.Priority oldPriority = task.getPriority();
         String oldName = task.getName();
         String oldDescription = task.getDescription();
         User oldAssignedUser = task.getAssignedUser();
 
-        // Met à jour les champs modifiables
         task.setName(updates.getName());
         task.setDescription(updates.getDescription());
         task.setDueDate(updates.getDueDate());
@@ -87,7 +82,6 @@ public class TaskService {
 
         Task updatedTask = taskRepository.save(task);
 
-        // Crée une entrée dans l'historique pour chaque changement
         if (oldStatus != task.getStatus()) {
             createHistoryEntry(task, editor, 
                 String.format("Statut changé de %s à %s", oldStatus, task.getStatus()));
@@ -111,7 +105,6 @@ public class TaskService {
                 "Tâche désassignée";
             createHistoryEntry(task, editor, message);
 
-            // Envoie un email si un nouvel utilisateur est assigné
             if (task.getAssignedUser() != null) {
                 emailService.sendEmail(
                     task.getAssignedUser().getEmail(),
@@ -134,13 +127,11 @@ public class TaskService {
         ProjectMember assignerMember = projectMemberRepository.findByProjectAndUser(task.getProject(), assigner)
             .orElseThrow(() -> new PermissionDeniedException("Vous n'êtes pas membre de ce projet"));
 
-        // Vérifie que l'assigner a le rôle ADMIN ou MEMBER
         roleService.hasRole(assignerMember, new ProjectMember.Role[]{
             ProjectMember.Role.ADMIN,
             ProjectMember.Role.MEMBER
         });
 
-        // Vérifie que l'assignee est membre du projet
         ProjectMember assigneeMember = projectMemberRepository.findByProjectAndUser(task.getProject(), assignee)
             .orElseThrow(() -> new IllegalArgumentException("L'utilisateur assigné n'est pas membre du projet"));
 
@@ -149,11 +140,9 @@ public class TaskService {
 
         Task savedTask = taskRepository.save(task);
 
-        // Crée une entrée dans l'historique
         createHistoryEntry(task, assigner,
             String.format("Tâche assignée à %s", assignee.getUsername()));
 
-        // Envoie un email de notification
         emailService.sendEmail(
             assignee.getEmail(),
             "Nouvelle tâche assignée",
@@ -172,7 +161,6 @@ public class TaskService {
         ProjectMember projectMember = projectMemberRepository.findByProjectAndUser(task.getProject(), user)
             .orElseThrow(() -> new PermissionDeniedException("Vous n'êtes pas membre de ce projet"));
 
-        // Vérifie que l'utilisateur a un rôle valide (même les OBSERVER peuvent voir l'historique)
         roleService.hasRole(projectMember, new ProjectMember.Role[]{
             ProjectMember.Role.ADMIN,
             ProjectMember.Role.MEMBER,

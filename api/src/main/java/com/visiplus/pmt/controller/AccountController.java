@@ -27,7 +27,6 @@ public class AccountController {
             @AuthenticationPrincipal User user,
             @Valid @RequestBody UpdateAccountDTO updateAccountDTO
     ) {
-      System.out.println("User: " + user);
         return ResponseEntity.ok(accountService.updateAccount(user, updateAccountDTO));
     }
 } 
