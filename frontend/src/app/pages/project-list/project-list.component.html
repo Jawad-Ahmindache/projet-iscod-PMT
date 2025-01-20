@@ -1,0 +1,19 @@
+<div class="project-list">
+  <h1>Mes Projets</h1>
+
+  <div class="projects-grid">
+    @for (project of projects; track project.id) {
+    <div class="project-card">
+      <h3>{{ project.name }}</h3>
+      @if (project.description) {
+      <p>{{ project.description }}</p>
+      }
+      <div class="project-footer">
+        <span class="date"
+          >Créé le {{ project.createdAt | date : "dd/MM/yyyy" }}</span
+        >
+      </div>
+    </div>
+    }
+  </div>
+</div>

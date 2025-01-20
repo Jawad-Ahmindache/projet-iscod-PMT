@@ -5,6 +5,7 @@ import { MainLayoutComponent } from './layouts/main-layout/main-layout.component
 import { AccountComponent } from './pages/account/account.component';
 import { HomeComponent } from './pages/home/home.component';
 import { LoginComponent } from './pages/login/login.component';
+import { ProjectListComponent } from './pages/project-list/project-list.component';
 import { RegisterComponent } from './pages/register/register.component';
 
 export const routes: Routes = [
@@ -24,7 +25,11 @@ export const routes: Routes = [
       },
       {
         path: 'account',
-        component: AccountComponent
+        component: AccountComponent,
+      },
+      {
+        path: 'projects',
+        component: ProjectListComponent,
       },
     ],
   },

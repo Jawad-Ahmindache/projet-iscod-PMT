@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { AUTH_API } from '../constants/api.constants';
-import { Project } from '../models/project.interface';
+import { Page } from '../models/page.model';
+import { Project } from '../models/project.model';
 
 @Injectable({
   providedIn: 'root',
@@ -11,7 +12,9 @@ export class ProjectService {
   private http = inject(HttpClient);
 
   getProjects(): Observable<Project[]> {
-    return this.http.get<Project[]>(AUTH_API.projects.list);
+    return this.http
+      .get<Page<Project>>(AUTH_API.projects.list)
+      .pipe(map((response) => response.content));
   }
 
   getProject(id: number): Observable<Project> {
