@@ -1,9 +1,15 @@
 <div class="project-list">
-  <h1>Mes Projets</h1>
+  <div class="project-header">
+    <h1>Mes Projets</h1>
+    <button class="create-button" (click)="onCreateProject()">
+      <i class="fas fa-plus"></i>
+      Créer un projet
+    </button>
+  </div>
 
   <div class="projects-grid">
     @for (project of projects; track project.id) {
-    <div class="project-card">
+    <div class="project-card" (click)="onProjectClick(project)">
       <h3>{{ project.name }}</h3>
       @if (project.description) {
       <p>{{ project.description }}</p>

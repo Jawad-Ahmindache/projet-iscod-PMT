@@ -1,7 +1,9 @@
 package com.visiplus.pmt.service;
 
 import com.visiplus.pmt.model.Project;
+import com.visiplus.pmt.model.ProjectMember;
 import com.visiplus.pmt.model.User;
+import com.visiplus.pmt.repository.ProjectMemberRepository;
 import com.visiplus.pmt.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
+    private final ProjectMemberRepository projectMemberRepository;
 
     @Transactional(readOnly = true)
     public Page<Project> getProjectsByMember(User user, Pageable pageable) {
@@ -26,6 +29,20 @@ public class ProjectService {
     public Project getProjectByIdAndMember(Long projectId, User user) {
         return projectRepository.findByIdAndMembers_User(projectId, user)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Projet non trouvé"));
+    }
+
+    @Transactional
+    public Project createProject(Project project, User user) {
+        project.setId(null); // Assure qu'on crée un nouveau projet
+        Project savedProject = projectRepository.save(project);
+
+        ProjectMember projectMember = new ProjectMember();
+        projectMember.setProject(savedProject);
+        projectMember.setUser(user);
+        projectMember.setRole(ProjectMember.Role.ADMIN);
+        projectMemberRepository.save(projectMember);
+
+        return savedProject;
     }
 
     @Transactional(readOnly = true)

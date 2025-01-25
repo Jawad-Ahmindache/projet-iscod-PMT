@@ -1,0 +1,37 @@
+.tabs {
+  .tabs-header {
+    display: flex;
+    gap: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 1rem;
+
+    .tab-button {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      background: none;
+      color: #64748b;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+
+      &:hover {
+        color: #334155;
+      }
+
+      &.active {
+        color: #334155;
+
+        &:after {
+          content: "";
+          position: absolute;
+          bottom: -1px;
+          left: 0;
+          right: 0;
+          height: 2px;
+          background-color: #3b82f6;
+        }
+      }
+    }
+  }
+}

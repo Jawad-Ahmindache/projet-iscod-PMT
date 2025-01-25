@@ -1,14 +1,18 @@
 package com.visiplus.pmt.service;
 
+import com.visiplus.pmt.dto.TaskDto;
 import com.visiplus.pmt.exception.PermissionDeniedException;
 import com.visiplus.pmt.model.*;
 import com.visiplus.pmt.repository.ProjectMemberRepository;
 import com.visiplus.pmt.repository.TaskRepository;
 import com.visiplus.pmt.repository.TaskHistoryRepository;
+import com.visiplus.pmt.repository.ProjectRepository;
 import com.visiplus.pmt.security.RoleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,10 +22,73 @@ import java.util.List;
 public class TaskService {
 
     private final TaskRepository taskRepository;
+    private final ProjectRepository projectRepository;
     private final ProjectMemberRepository projectMemberRepository;
     private final TaskHistoryRepository taskHistoryRepository;
     private final RoleService roleService;
     private final EmailService emailService;
+    private final ProjectService projectService;
+
+    @Transactional(readOnly = true)
+    public List<TaskDto> getTasksByProject(Long projectId, User user) {
+        projectService.checkProjectAccess(projectId, user);
+        return taskRepository.findByProjectId(projectId)
+                .stream()
+                .map(TaskDto::fromEntity)
+                .toList();
+    }
+
+    @Transactional
+    public TaskDto createTask(Long projectId, Task task, User user) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Projet non trouvé"));
+
+        projectService.checkProjectAccess(projectId, user);
+
+        task.setId(null);
+        task.setProject(project);
+        task.setStatus(Task.Status.TODO);
+        if (task.getPriority() == null) {
+            task.setPriority(Task.Priority.LOW);
+        }
+
+        return TaskDto.fromEntity(taskRepository.save(task));
+    }
+
+    @Transactional
+    public TaskDto updateTask(Long projectId, Long taskId, Task updatedTask, User user) {
+        projectService.checkProjectAccess(projectId, user);
+
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tâche non trouvée"));
+
+        if (!task.getProject().getId().equals(projectId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cette tâche n'appartient pas à ce projet");
+        }
+
+        task.setName(updatedTask.getName());
+        task.setDescription(updatedTask.getDescription());
+        task.setPriority(updatedTask.getPriority());
+        task.setDueDate(updatedTask.getDueDate());
+        task.setAssignedUser(updatedTask.getAssignedUser());
+
+        return TaskDto.fromEntity(taskRepository.save(task));
+    }
+
+    @Transactional
+    public TaskDto updateTaskStatus(Long projectId, Long taskId, Task.Status status, User user) {
+        projectService.checkProjectAccess(projectId, user);
+
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tâche non trouvée"));
+
+        if (!task.getProject().getId().equals(projectId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cette tâche n'appartient pas à ce projet");
+        }
+
+        task.setStatus(status);
+        return TaskDto.fromEntity(taskRepository.save(task));
+    }
 
     /**
      * Crée une nouvelle tâche dans un projet

@@ -18,5 +18,16 @@ export const AUTH_API = {
     create: `${API_URL}/projects`,
     update: (id: number) => `${API_URL}/projects/${id}`,
     delete: (id: number) => `${API_URL}/projects/${id}`,
+    members: {
+      list: (projectId: number) => `${API_URL}/projects/${projectId}/members`,
+    },
+    tasks: {
+      list: (projectId: number) => `${API_URL}/projects/${projectId}/tasks`,
+      create: (projectId: number) => `${API_URL}/projects/${projectId}/tasks`,
+      update: (projectId: number, taskId: number) =>
+        `${API_URL}/projects/${projectId}/tasks/${taskId}`,
+      updateStatus: (projectId: number, taskId: number) =>
+        `${API_URL}/projects/${projectId}/tasks/${taskId}/status`,
+    },
   },
 } as const;

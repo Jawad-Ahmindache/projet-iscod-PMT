@@ -1,0 +1,105 @@
+<div class="task-list">
+  <div class="task-list-header">
+    <button class="create-button" (click)="toggleCreateForm()">
+      @if (!showCreateForm) {
+      <i class="fas fa-plus"></i> Créer une nouvelle tâche } @else {
+      <i class="fas fa-times"></i> Annuler la tâche }
+    </button>
+  </div>
+
+  @if (showCreateForm) {
+  <form [formGroup]="taskForm" (ngSubmit)="onSubmit()" class="create-task-form">
+    <div class="form-group">
+      <label for="name">Titre *</label>
+      <input
+        type="text"
+        id="name"
+        formControlName="name"
+        placeholder="Titre de la tâche"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="description">Description</label>
+      <textarea
+        id="description"
+        formControlName="description"
+        placeholder="Description de la tâche"
+        rows="3"
+      ></textarea>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="dueDate">Date d'échéance *</label>
+        <input type="date" id="dueDate" formControlName="dueDate" />
+      </div>
+
+      <div class="form-group">
+        <label>Priorité *</label>
+        <div class="priority-options">
+          <label class="priority-option">
+            <input type="radio" formControlName="priority" [value]="0" />
+            <span class="priority-label low">Basse</span>
+          </label>
+          <label class="priority-option">
+            <input type="radio" formControlName="priority" [value]="1" />
+            <span class="priority-label medium">Moyenne</span>
+          </label>
+          <label class="priority-option">
+            <input type="radio" formControlName="priority" [value]="2" />
+            <span class="priority-label high">Haute</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" [disabled]="!taskForm.valid">
+        Ajouter la tâche
+      </button>
+    </div>
+  </form>
+  }
+
+  <div class="task-columns">
+    <div class="task-column todo">
+      <h3>À faire</h3>
+      <div class="tasks">
+        @for (task of getTasksByStatus(TaskStatus.TODO); track task.id) {
+        <app-task-card
+          [task]="task"
+          [members]="members"
+          (taskUpdated)="onTaskUpdated()"
+        ></app-task-card>
+        }
+      </div>
+    </div>
+
+    <div class="task-column in-progress">
+      <h3>En cours</h3>
+      <div class="tasks">
+        @for (task of getTasksByStatus(TaskStatus.IN_PROGRESS); track task.id) {
+        <app-task-card
+          [task]="task"
+          [members]="members"
+          (taskUpdated)="onTaskUpdated()"
+        ></app-task-card>
+        }
+      </div>
+    </div>
+
+    <div class="task-column completed">
+      <h3>Terminé</h3>
+      <div class="tasks">
+        @for (task of getTasksByStatus(TaskStatus.COMPLETED); track task.id) {
+        <app-task-card
+          [task]="task"
+          [members]="members"
+          (taskUpdated)="onTaskUpdated()"
+        ></app-task-card>
+        }
+      </div>
+    </div>
+  </div>
+</div>

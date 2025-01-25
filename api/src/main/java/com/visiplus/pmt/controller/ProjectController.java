@@ -35,4 +35,13 @@ public class ProjectController {
     ) {
         return ResponseEntity.ok(projectService.getProjectByIdAndMember(id, user));
     }
+
+    @PostMapping
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Project> createProject(
+            @AuthenticationPrincipal User user,
+            @RequestBody Project project
+    ) {
+        return ResponseEntity.ok(projectService.createProject(project, user));
+    }
 } 

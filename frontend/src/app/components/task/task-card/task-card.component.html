@@ -1,0 +1,64 @@
+<div class="task-card" (mouseenter)="onMouseEnter()">
+  <div class="task-header">
+    <h4>{{ task.name }}</h4>
+    <div class="task-priority">
+      <div class="priority-options">
+        <label class="priority-option">
+          <input
+            type="radio"
+            [name]="'priority-' + task.id"
+            [value]="0"
+            [checked]="task.priority === 0"
+            (change)="onPriorityChange(0)"
+          />
+          <span class="priority-label low">Basse</span>
+        </label>
+        <label class="priority-option">
+          <input
+            type="radio"
+            [name]="'priority-' + task.id"
+            [value]="1"
+            [checked]="task.priority === 1"
+            (change)="onPriorityChange(1)"
+          />
+          <span class="priority-label medium">Moyenne</span>
+        </label>
+        <label class="priority-option">
+          <input
+            type="radio"
+            [name]="'priority-' + task.id"
+            [value]="2"
+            [checked]="task.priority === 2"
+            (change)="onPriorityChange(2)"
+          />
+          <span class="priority-label high">Haute</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="task-info">
+    <div class="task-assignee">
+      <select
+        [ngModel]="task.assigneeId"
+        (ngModelChange)="onAssigneeChange($event)"
+      >
+        <option [ngValue]="null">Non assigné</option>
+        @for (member of members; track member.id) {
+        <option [ngValue]="member.userId">{{ member.username }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <div class="task-actions">
+    @for (action of getStatusActions(); track action.status) {
+    <button
+      [class]="'status-button ' + action.status.toLowerCase()"
+      (click)="onStatusChange(action.status)"
+    >
+      {{ action.label }}
+    </button>
+    }
+  </div>
+</div>

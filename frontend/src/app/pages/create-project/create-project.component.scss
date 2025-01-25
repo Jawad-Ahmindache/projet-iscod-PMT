@@ -1,0 +1,86 @@
+.create-project {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+
+  h1 {
+    color: #1e293b;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+  }
+
+  .project-form {
+    .form-group {
+      margin-bottom: 1.5rem;
+
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #334155;
+        font-weight: 500;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+
+        &:focus {
+          outline: none;
+          border-color: #3b82f6;
+        }
+      }
+
+      .error {
+        color: #ef4444;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        display: block;
+      }
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      margin-top: 2rem;
+
+      button {
+        padding: 0.75rem 1.5rem;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &.cancel-button {
+          background-color: #e2e8f0;
+          border: none;
+          color: #475569;
+
+          &:hover {
+            background-color: #cbd5e1;
+          }
+        }
+
+        &.submit-button {
+          background-color: #3b82f6;
+          border: none;
+          color: white;
+
+          &:hover {
+            background-color: #2563eb;
+          }
+
+          &:disabled {
+            background-color: #93c5fd;
+            cursor: not-allowed;
+          }
+        }
+      }
+    }
+  }
+}

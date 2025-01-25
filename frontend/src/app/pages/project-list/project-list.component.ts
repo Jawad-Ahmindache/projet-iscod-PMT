@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { Project } from '../../models/project.model';
 import { ProjectService } from '../../services/project.service';
 
@@ -12,10 +13,19 @@ import { ProjectService } from '../../services/project.service';
 })
 export class ProjectListComponent implements OnInit {
   private projectService = inject(ProjectService);
+  private router = inject(Router);
   projects: Project[] = [];
 
   ngOnInit(): void {
     this.loadProjects();
+  }
+
+  onProjectClick(project: Project): void {
+    this.router.navigate(['/projects', project.id]);
+  }
+
+  onCreateProject(): void {
+    this.router.navigate(['/projects/create']);
   }
 
   private loadProjects(): void {
