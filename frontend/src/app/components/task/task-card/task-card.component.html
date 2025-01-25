@@ -7,9 +7,9 @@
           <input
             type="radio"
             [name]="'priority-' + task.id"
-            [value]="0"
-            [checked]="task.priority === 0"
-            (change)="onPriorityChange(0)"
+            [value]="TaskPriority.LOW"
+            [checked]="task.priority === TaskPriority.LOW"
+            (change)="onPriorityChange(TaskPriority.LOW)"
           />
           <span class="priority-label low">Basse</span>
         </label>
@@ -17,9 +17,9 @@
           <input
             type="radio"
             [name]="'priority-' + task.id"
-            [value]="1"
-            [checked]="task.priority === 1"
-            (change)="onPriorityChange(1)"
+            [value]="TaskPriority.MEDIUM"
+            [checked]="task.priority === TaskPriority.MEDIUM"
+            (change)="onPriorityChange(TaskPriority.MEDIUM)"
           />
           <span class="priority-label medium">Moyenne</span>
         </label>
@@ -27,9 +27,9 @@
           <input
             type="radio"
             [name]="'priority-' + task.id"
-            [value]="2"
-            [checked]="task.priority === 2"
-            (change)="onPriorityChange(2)"
+            [value]="TaskPriority.HIGH"
+            [checked]="task.priority === TaskPriority.HIGH"
+            (change)="onPriorityChange(TaskPriority.HIGH)"
           />
           <span class="priority-label high">Haute</span>
         </label>
@@ -40,7 +40,7 @@
   <div class="task-info">
     <div class="task-assignee">
       <select
-        [ngModel]="task.assigneeId"
+        [ngModel]="task.assignedUserId"
         (ngModelChange)="onAssigneeChange($event)"
       >
         <option [ngValue]="null">Non assigné</option>

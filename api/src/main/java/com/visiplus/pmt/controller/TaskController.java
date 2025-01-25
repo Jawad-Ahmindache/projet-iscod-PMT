@@ -59,4 +59,15 @@ public class TaskController {
     ) {
         return ResponseEntity.ok(taskService.updateTaskStatus(projectId, taskId, status, user));
     }
+
+    @PutMapping("/{taskId}/assign")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<TaskDto> updateTaskAssignee(
+            @PathVariable Long projectId,
+            @PathVariable Long taskId,
+            @RequestParam Long assigneeId,
+            @AuthenticationPrincipal User user
+    ) {
+        return ResponseEntity.ok(taskService.updateTaskAssignee(projectId, taskId, assigneeId, user));
+    }
 } 

@@ -2,7 +2,12 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AUTH_API } from '../constants/api.constants';
-import { Task, TaskStatus, UpdateTaskDto } from '../models/task.model';
+import {
+  Task,
+  TaskPriority,
+  TaskStatus,
+  UpdateTaskDto,
+} from '../models/task.model';
 
 @Injectable({
   providedIn: 'root',
@@ -26,9 +31,10 @@ export class TaskService {
     taskId: number,
     task: UpdateTaskDto
   ): Observable<Task> {
+    const { assigneeId, ...updateData } = task;
     return this.http.put<Task>(
       AUTH_API.projects.tasks.update(projectId, taskId),
-      task
+      updateData
     );
   }
 
@@ -47,7 +53,7 @@ export class TaskService {
   updateTaskPriority(
     projectId: number,
     taskId: number,
-    priority: number
+    priority: TaskPriority
   ): Observable<Task> {
     return this.http.put<Task>(
       AUTH_API.projects.tasks.update(projectId, taskId),
@@ -55,14 +61,18 @@ export class TaskService {
     );
   }
 
-  updateTaskAssignee(
+  assignTask(
     projectId: number,
     taskId: number,
     assigneeId: number | undefined
   ): Observable<Task> {
+    const params: { [key: string]: string } = {};
+    if (assigneeId !== undefined) params['assigneeId'] = assigneeId.toString();
+
     return this.http.put<Task>(
-      AUTH_API.projects.tasks.update(projectId, taskId),
-      { assigneeId }
+      AUTH_API.projects.tasks.assign(projectId, taskId),
+      null,
+      { params }
     );
   }
 }

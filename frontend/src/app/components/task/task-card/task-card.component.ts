@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ProjectMember } from '../../../models/project-member.model';
-import { Task, TaskStatus } from '../../../models/task.model';
+import { Task, TaskPriority, TaskStatus } from '../../../models/task.model';
 import { ProjectMemberService } from '../../../services/project-member.service';
 import { TaskService } from '../../../services/task.service';
 
@@ -22,20 +22,17 @@ export class TaskCardComponent {
   private taskService = inject(TaskService);
 
   readonly TaskStatus = TaskStatus;
+  readonly TaskPriority = TaskPriority;
 
   onAssigneeChange(assigneeId: number | null): void {
     this.taskService
-      .updateTaskAssignee(
-        this.task.projectId,
-        this.task.id,
-        assigneeId ?? undefined
-      )
+      .assignTask(this.task.projectId, this.task.id, assigneeId ?? undefined)
       .subscribe(() => {
         this.taskUpdated.emit();
       });
   }
 
-  onPriorityChange(priority: number): void {
+  onPriorityChange(priority: TaskPriority): void {
     this.taskService
       .updateTaskPriority(this.task.projectId, this.task.id, priority)
       .subscribe(() => {

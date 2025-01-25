@@ -7,6 +7,7 @@ import com.visiplus.pmt.repository.ProjectMemberRepository;
 import com.visiplus.pmt.repository.TaskRepository;
 import com.visiplus.pmt.repository.TaskHistoryRepository;
 import com.visiplus.pmt.repository.ProjectRepository;
+import com.visiplus.pmt.repository.UserRepository;
 import com.visiplus.pmt.security.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +27,7 @@ public class TaskService {
     private final ProjectRepository projectRepository;
     private final ProjectMemberRepository projectMemberRepository;
     private final TaskHistoryRepository taskHistoryRepository;
+    private final UserRepository userRepository;
     private final RoleService roleService;
     private final EmailService emailService;
     private final ProjectService projectService;
@@ -52,13 +55,27 @@ public class TaskService {
             task.setPriority(Task.Priority.LOW);
         }
 
-        return TaskDto.fromEntity(taskRepository.save(task));
+        Task savedTask = taskRepository.save(task);
+        createHistoryEntry(savedTask, user, "Tâche créée");
+
+        return TaskDto.fromEntity(savedTask);
     }
 
     @Transactional
     public TaskDto updateTask(Long projectId, Long taskId, Task updatedTask, User user) {
         projectService.checkProjectAccess(projectId, user);
 
+        Task task = findAndValidateTask(projectId, taskId);
+        TaskSnapshot snapshot = new TaskSnapshot(task);
+
+        updateTaskFields(task, updatedTask);
+        Task savedTask = taskRepository.save(task);
+        createHistoryEntries(savedTask, snapshot, user);
+
+        return TaskDto.fromEntity(savedTask);
+    }
+
+    private Task findAndValidateTask(Long projectId, Long taskId) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tâche non trouvée"));
 
@@ -66,13 +83,103 @@ public class TaskService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cette tâche n'appartient pas à ce projet");
         }
 
-        task.setName(updatedTask.getName());
-        task.setDescription(updatedTask.getDescription());
-        task.setPriority(updatedTask.getPriority());
-        task.setDueDate(updatedTask.getDueDate());
-        task.setAssignedUser(updatedTask.getAssignedUser());
+        return task;
+    }
 
-        return TaskDto.fromEntity(taskRepository.save(task));
+    private void updateTaskFields(Task task, Task updates) {
+        Optional.ofNullable(updates.getName()).ifPresent(task::setName);
+        Optional.ofNullable(updates.getDescription()).ifPresent(task::setDescription);
+        Optional.ofNullable(updates.getPriority()).ifPresent(task::setPriority);
+        Optional.ofNullable(updates.getDueDate()).ifPresent(task::setDueDate);
+        Optional.ofNullable(updates.getStatus()).ifPresent(task::setStatus);
+        task.setAssignedUser(updates.getAssignedUser());
+        task.setUpdatedAt(LocalDateTime.now());
+    }
+
+    private void createHistoryEntries(Task task, TaskSnapshot snapshot, User user) {
+        if (hasStatusChanged(task, snapshot)) {
+            createHistoryEntry(task, user, 
+                String.format("Statut changé de %s à %s", snapshot.status(), task.getStatus()));
+        }
+
+        if (hasPriorityChanged(task, snapshot)) {
+            createHistoryEntry(task, user,
+                String.format("Priorité changée de %s à %s", snapshot.priority(), task.getPriority()));
+        }
+
+        if (hasNameChanged(task, snapshot)) {
+            createHistoryEntry(task, user,
+                String.format("Nom changé de '%s' à '%s'", snapshot.name(), task.getName()));
+        }
+
+        if (hasDescriptionChanged(task, snapshot)) {
+            createHistoryEntry(task, user, "Description mise à jour");
+        }
+
+        if (hasAssigneeChanged(task, snapshot)) {
+            String message = task.getAssignedUser() != null ?
+                String.format("Tâche assignée à %s", task.getAssignedUser().getUsername()) :
+                "Tâche désassignée";
+            createHistoryEntry(task, user, message);
+
+            notifyNewAssignee(task);
+        }
+    }
+
+    private boolean hasStatusChanged(Task task, TaskSnapshot snapshot) {
+        return snapshot.status() != task.getStatus();
+    }
+
+    private boolean hasPriorityChanged(Task task, TaskSnapshot snapshot) {
+        return snapshot.priority() != task.getPriority();
+    }
+
+    private boolean hasNameChanged(Task task, TaskSnapshot snapshot) {
+        return !snapshot.name().equals(task.getName());
+    }
+
+    private boolean hasDescriptionChanged(Task task, TaskSnapshot snapshot) {
+        String oldDescription = snapshot.description();
+        String newDescription = task.getDescription();
+        return (oldDescription == null && newDescription != null) ||
+               (oldDescription != null && !oldDescription.equals(newDescription));
+    }
+
+    private boolean hasAssigneeChanged(Task task, TaskSnapshot snapshot) {
+        User oldAssignee = snapshot.assignedUser();
+        User newAssignee = task.getAssignedUser();
+        return (oldAssignee == null && newAssignee != null) ||
+               (oldAssignee != null && !oldAssignee.equals(newAssignee));
+    }
+
+    private void notifyNewAssignee(Task task) {
+        if (task.getAssignedUser() != null) {
+            emailService.sendEmail(
+                task.getAssignedUser().getEmail(),
+                "Nouvelle tâche assignée",
+                String.format("La tâche '%s' vous a été assignée dans le projet '%s'.",
+                    task.getName(),
+                    task.getProject().getName())
+            );
+        }
+    }
+
+    private record TaskSnapshot(
+        Task.Status status,
+        Task.Priority priority,
+        String name,
+        String description,
+        User assignedUser
+    ) {
+        public TaskSnapshot(Task task) {
+            this(
+                task.getStatus(),
+                task.getPriority(),
+                task.getName(),
+                task.getDescription(),
+                task.getAssignedUser()
+            );
+        }
     }
 
     @Transactional
@@ -87,138 +194,58 @@ public class TaskService {
         }
 
         task.setStatus(status);
-        return TaskDto.fromEntity(taskRepository.save(task));
-    }
-
-    /**
-     * Crée une nouvelle tâche dans un projet
-     */
-    @Transactional
-    public Task createTask(Project project, Task task, User creator) {
-        ProjectMember projectMember = projectMemberRepository.findByProjectAndUser(project, creator)
-            .orElseThrow(() -> new PermissionDeniedException("Vous n'êtes pas membre de ce projet"));
-
-        roleService.hasRole(projectMember, new ProjectMember.Role[]{
-            ProjectMember.Role.ADMIN,
-            ProjectMember.Role.MEMBER
-        });
-
-        task.setProject(project);
-        task.setCreatedAt(LocalDateTime.now());
         task.setUpdatedAt(LocalDateTime.now());
-        task.setStatus(Task.Status.TODO);
 
         Task savedTask = taskRepository.save(task);
+        createHistoryEntry(savedTask, user, String.format("Statut changé à %s", status));
 
-        TaskHistory history = new TaskHistory();
-        history.setTask(savedTask);
-        history.setChangedBy(creator);
-        history.setChangeDescription("Tâche créée");
-        history.setChangedAt(LocalDateTime.now());
-        taskHistoryRepository.save(history);
-
-        return savedTask;
+        return TaskDto.fromEntity(savedTask);
     }
-
-    /**
-     * Met à jour une tâche existante
-     */
-    @Transactional
-    public Task updateTask(Task task, Task updates, User editor) {
-        ProjectMember projectMember = projectMemberRepository.findByProjectAndUser(task.getProject(), editor)
-            .orElseThrow(() -> new PermissionDeniedException("Vous n'êtes pas membre de ce projet"));
-
-        roleService.hasRole(projectMember, new ProjectMember.Role[]{
-            ProjectMember.Role.ADMIN,
-            ProjectMember.Role.MEMBER
-        });
-
-        Task.Status oldStatus = task.getStatus();
-        Task.Priority oldPriority = task.getPriority();
-        String oldName = task.getName();
-        String oldDescription = task.getDescription();
-        User oldAssignedUser = task.getAssignedUser();
-
-        task.setName(updates.getName());
-        task.setDescription(updates.getDescription());
-        task.setDueDate(updates.getDueDate());
-        task.setPriority(updates.getPriority());
-        task.setStatus(updates.getStatus());
-        task.setAssignedUser(updates.getAssignedUser());
-        task.setUpdatedAt(LocalDateTime.now());
-
-        Task updatedTask = taskRepository.save(task);
-
-        if (oldStatus != task.getStatus()) {
-            createHistoryEntry(task, editor, 
-                String.format("Statut changé de %s à %s", oldStatus, task.getStatus()));
-        }
-        if (oldPriority != task.getPriority()) {
-            createHistoryEntry(task, editor,
-                String.format("Priorité changée de %s à %s", oldPriority, task.getPriority()));
-        }
-        if (!oldName.equals(task.getName())) {
-            createHistoryEntry(task, editor,
-                String.format("Nom changé de '%s' à '%s'", oldName, task.getName()));
-        }
-        if ((oldDescription == null && task.getDescription() != null) ||
-            (oldDescription != null && !oldDescription.equals(task.getDescription()))) {
-            createHistoryEntry(task, editor, "Description mise à jour");
-        }
-        if ((oldAssignedUser == null && task.getAssignedUser() != null) ||
-            (oldAssignedUser != null && !oldAssignedUser.equals(task.getAssignedUser()))) {
-            String message = task.getAssignedUser() != null ?
-                String.format("Tâche assignée à %s", task.getAssignedUser().getUsername()) :
-                "Tâche désassignée";
-            createHistoryEntry(task, editor, message);
-
-            if (task.getAssignedUser() != null) {
-                emailService.sendEmail(
-                    task.getAssignedUser().getEmail(),
-                    "Nouvelle tâche assignée",
-                    String.format("La tâche '%s' vous a été assignée dans le projet '%s'.",
-                        task.getName(),
-                        task.getProject().getName())
-                );
-            }
-        }
-
-        return updatedTask;
-    }
+   
 
     /**
      * Assigne une tâche à un utilisateur
      */
     @Transactional
-    public Task assignTask(Task task, User assignee, User assigner) {
-        ProjectMember assignerMember = projectMemberRepository.findByProjectAndUser(task.getProject(), assigner)
-            .orElseThrow(() -> new PermissionDeniedException("Vous n'êtes pas membre de ce projet"));
+    public TaskDto updateTaskAssignee(Long projectId, Long taskId, Long assigneeId, User assigner) {
+        projectService.checkProjectAccess(projectId, assigner);
 
-        roleService.hasRole(assignerMember, new ProjectMember.Role[]{
-            ProjectMember.Role.ADMIN,
-            ProjectMember.Role.MEMBER
-        });
+        Task task = findAndValidateTask(projectId, taskId);
+        Project project = task.getProject();
 
-        ProjectMember assigneeMember = projectMemberRepository.findByProjectAndUser(task.getProject(), assignee)
-            .orElseThrow(() -> new IllegalArgumentException("L'utilisateur assigné n'est pas membre du projet"));
+        User assignee = null;
+        if (assigneeId != null) {
+            User potentialAssignee = userRepository.findById(assigneeId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, 
+                    "Utilisateur non trouvé"));
+                    
+            ProjectMember assigneeMember = projectMemberRepository.findByProjectAndUser(project, potentialAssignee)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+                    "L'utilisateur assigné n'est pas membre du projet"));
+            assignee = assigneeMember.getUser();
+        }
 
         task.setAssignedUser(assignee);
         task.setUpdatedAt(LocalDateTime.now());
 
         Task savedTask = taskRepository.save(task);
 
-        createHistoryEntry(task, assigner,
-            String.format("Tâche assignée à %s", assignee.getUsername()));
+        String historyMessage = assignee != null ?
+            String.format("Tâche assignée à %s", assignee.getUsername()) :
+            "Tâche désassignée";
+        createHistoryEntry(savedTask, assigner, historyMessage);
 
-        emailService.sendEmail(
-            assignee.getEmail(),
-            "Nouvelle tâche assignée",
-            String.format("La tâche '%s' vous a été assignée dans le projet '%s'.",
-                task.getName(),
-                task.getProject().getName())
-        );
+        if (assignee != null) {
+            emailService.sendEmail(
+                assignee.getEmail(),
+                "Nouvelle tâche assignée",
+                String.format("La tâche '%s' vous a été assignée dans le projet '%s'.",
+                    task.getName(),
+                    task.getProject().getName())
+            );
+        }
 
-        return savedTask;
+        return TaskDto.fromEntity(savedTask);
     }
 
     /**

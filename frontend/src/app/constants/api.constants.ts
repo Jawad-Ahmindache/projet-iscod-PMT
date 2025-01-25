@@ -28,6 +28,8 @@ export const AUTH_API = {
         `${API_URL}/projects/${projectId}/tasks/${taskId}`,
       updateStatus: (projectId: number, taskId: number) =>
         `${API_URL}/projects/${projectId}/tasks/${taskId}/status`,
+      assign: (projectId: number, taskId: number) =>
+        `${API_URL}/projects/${projectId}/tasks/${taskId}/assign`,
     },
   },
 } as const;
