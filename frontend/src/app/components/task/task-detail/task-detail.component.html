@@ -1,0 +1,45 @@
+<div class="task-detail">
+  <div class="form-group">
+    <label>Nom</label>
+    <input type="text" [(ngModel)]="task.name" (blur)="onNameChange()" />
+  </div>
+
+  <div class="form-group">
+    <label>Description</label>
+    <textarea
+      [(ngModel)]="task.description"
+      (blur)="onDescriptionChange()"
+    ></textarea>
+  </div>
+
+  <div class="form-group">
+    <label>Priorité</label>
+    <div class="priority-options">
+      @for (priority of priorities; track priority) {
+      <label class="priority-option">
+        <input
+          type="radio"
+          [value]="priority"
+          [checked]="task.priority === priority"
+          (change)="onPriorityChange(priority)"
+        />
+        <span class="priority-label {{ priority.toLowerCase() }}">
+          {{ getPriorityLabel(priority) }}
+        </span>
+      </label>
+      }
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label>Date d'échéance</label>
+    <input
+      type="date"
+      [ngModel]="task.dueDate | date : 'yyyy-MM-dd'"
+      (ngModelChange)="onDueDateChange($event)"
+    />
+  </div>
+
+  <h3>Historique des modifications</h3>
+  <app-task-history-table [history]="history"></app-task-history-table>
+</div>

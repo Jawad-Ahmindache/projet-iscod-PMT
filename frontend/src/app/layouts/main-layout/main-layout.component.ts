@@ -1,7 +1,8 @@
 import { Component, effect, inject } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { TuiAlertService } from '@taiga-ui/core';
+import { Router, RouterOutlet } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 import { MainStore } from '../../services/store/main.store';
+import { ToastService } from '../../services/toast.service';
 import { SidebarComponent } from './sidebar/sidebar.component';
 
 @Component({
@@ -12,34 +13,29 @@ import { SidebarComponent } from './sidebar/sidebar.component';
   styleUrls: ['./main-layout.component.scss'],
 })
 export class MainLayoutComponent {
-  private alertService = inject(TuiAlertService);
+  private toastService = inject(ToastService);
   private store = inject(MainStore);
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
   constructor() {
     effect(() => {
       const error = this.store.error;
       if (error) {
-        this.alertService
-          .open(error, {
-            label: 'Erreur',
-            appearance: 'error',
-            autoClose: 5000,
-          })
-          .subscribe();
+        this.toastService.showError(error);
       }
     });
 
     effect(() => {
       const success = this.store.success;
       if (success) {
-        this.alertService
-          .open(success, {
-            label: 'Succès',
-            appearance: 'success',
-            autoClose: 3000,
-          })
-          .subscribe();
+        this.toastService.showSuccess(success);
       }
     });
+  }
+
+  logout() {
+    localStorage.removeItem('token');
+    this.router.navigate(['/auth/login']);
   }
 }

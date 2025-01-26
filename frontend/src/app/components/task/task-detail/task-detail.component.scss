@@ -1,0 +1,62 @@
+.task-detail {
+  padding: 1rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+input[type="text"],
+input[type="date"],
+textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.priority-options {
+  display: flex;
+  gap: 1rem;
+}
+
+.priority-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.priority-label {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+
+.priority-label.low {
+  background-color: #e9ecef;
+}
+
+.priority-label.medium {
+  background-color: #fff3cd;
+}
+
+.priority-label.high {
+  background-color: #f8d7da;
+}
+
+h3 {
+  margin: 2rem 0 1rem;
+}

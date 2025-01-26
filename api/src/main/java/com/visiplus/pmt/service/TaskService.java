@@ -48,7 +48,10 @@ public class TaskService {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Projet non trouvé"));
 
-        projectService.checkProjectAccess(projectId, user);
+        ProjectMember member = projectMemberRepository.findByProjectAndUser(project, user)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Vous n'êtes pas membre de ce projet"));
+        
+        projectService.isAdminOrMember(member);
 
         task.setId(null);
         task.setProject(project);
@@ -65,8 +68,14 @@ public class TaskService {
 
     @Transactional
     public TaskDto updateTask(Long projectId, Long taskId, UpdateTaskDto updateTaskDto, User user) {
-        projectService.checkProjectAccess(projectId, user);
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Projet non trouvé"));
 
+        ProjectMember member = projectMemberRepository.findByProjectAndUser(project, user)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Vous n'êtes pas membre de ce projet"));
+        
+        projectService.isAdminOrMember(member);
+        
         Task task = findAndValidateTask(projectId, taskId);
         Task.Status oldStatus = task.getStatus();
         Task.Priority oldPriority = task.getPriority();
@@ -201,7 +210,13 @@ public class TaskService {
 
     @Transactional
     public TaskDto updateTaskStatus(Long projectId, Long taskId, Task.Status status, User user) {
-        projectService.checkProjectAccess(projectId, user);
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Projet non trouvé"));
+
+        ProjectMember member = projectMemberRepository.findByProjectAndUser(project, user)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Vous n'êtes pas membre de ce projet"));
+        
+        projectService.isAdminOrMember(member);
 
         Task task = findAndValidateTask(projectId, taskId);
         Task.Status oldStatus = task.getStatus();
@@ -217,7 +232,13 @@ public class TaskService {
 
     @Transactional
     public TaskDto updateTaskPriority(Long projectId, Long taskId, Task.Priority priority, User user) {
-        projectService.checkProjectAccess(projectId, user);
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Projet non trouvé"));
+
+        ProjectMember member = projectMemberRepository.findByProjectAndUser(project, user)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Vous n'êtes pas membre de ce projet"));
+        
+        projectService.isAdminOrMember(member);
 
         Task task = findAndValidateTask(projectId, taskId);
         Task.Priority oldPriority = task.getPriority();
@@ -237,10 +258,15 @@ public class TaskService {
      */
     @Transactional
     public TaskDto updateTaskAssignee(Long projectId, Long taskId, Long assigneeId, User assigner) {
-        projectService.checkProjectAccess(projectId, assigner);
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Projet non trouvé"));
+
+        ProjectMember member = projectMemberRepository.findByProjectAndUser(project, assigner)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Vous n'êtes pas membre de ce projet"));
+        
+        projectService.isAdminOrMember(member);
 
         Task task = findAndValidateTask(projectId, taskId);
-        Project project = task.getProject();
 
         User assignee = null;
         if (assigneeId != null) {
