@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AUTH_API } from '../constants/api.constants';
+import { TaskHistory } from '../models/task-history.model';
 import {
   Task,
   TaskPriority,
@@ -19,6 +20,16 @@ export class TaskService {
     return this.http.get<Task[]>(AUTH_API.projects.tasks.list(projectId));
   }
 
+  getTask(projectId: number, taskId: number): Observable<Task> {
+    return this.http.get<Task>(AUTH_API.projects.tasks.get(projectId, taskId));
+  }
+
+  getTaskHistory(projectId: number, taskId: number): Observable<TaskHistory[]> {
+    return this.http.get<TaskHistory[]>(
+      AUTH_API.projects.tasks.history(projectId, taskId)
+    );
+  }
+
   createTask(projectId: number, task: Partial<Task>): Observable<Task> {
     return this.http.post<Task>(
       AUTH_API.projects.tasks.create(projectId),
@@ -31,10 +42,9 @@ export class TaskService {
     taskId: number,
     task: UpdateTaskDto
   ): Observable<Task> {
-    const { assigneeId, ...updateData } = task;
     return this.http.put<Task>(
       AUTH_API.projects.tasks.update(projectId, taskId),
-      updateData
+      task
     );
   }
 
@@ -56,8 +66,9 @@ export class TaskService {
     priority: TaskPriority
   ): Observable<Task> {
     return this.http.put<Task>(
-      AUTH_API.projects.tasks.update(projectId, taskId),
-      { priority }
+      AUTH_API.projects.tasks.updatePriority(projectId, taskId),
+      null,
+      { params: { priority } }
     );
   }
 

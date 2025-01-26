@@ -1,6 +1,9 @@
 <div class="task-card" (mouseenter)="onMouseEnter()">
   <div class="task-header">
-    <h4>{{ task.name }}</h4>
+    <div class="task-title">
+      <h4>{{ task.name }}</h4>
+      <button class="detail-button" (click)="openDetailModal()">Voir</button>
+    </div>
     <div class="task-priority">
       <div class="priority-options">
         <label class="priority-option">
@@ -61,4 +64,16 @@
     </button>
     }
   </div>
+
+  @if (showDetailModal) {
+  <app-modal title="Détails de la tâche" (close)="closeDetailModal()">
+    <app-task-detail
+      [task]="task"
+      (taskUpdated)="taskUpdated.emit()"
+    ></app-task-detail>
+  </app-modal>
+  } @if (isOverdue()) {
+  <br />
+  <span class="overdue-label">Arrivé à échéance</span>
+  }
 </div>

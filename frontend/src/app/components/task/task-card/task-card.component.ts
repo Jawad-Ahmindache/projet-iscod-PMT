@@ -5,11 +5,13 @@ import { ProjectMember } from '../../../models/project-member.model';
 import { Task, TaskPriority, TaskStatus } from '../../../models/task.model';
 import { ProjectMemberService } from '../../../services/project-member.service';
 import { TaskService } from '../../../services/task.service';
+import { ModalComponent } from '../../shared/modal/modal.component';
+import { TaskDetailComponent } from '../task-detail/task-detail.component';
 
 @Component({
   selector: 'app-task-card',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ModalComponent, TaskDetailComponent],
   templateUrl: './task-card.component.html',
   styleUrls: ['./task-card.component.scss'],
 })
@@ -23,6 +25,8 @@ export class TaskCardComponent {
 
   readonly TaskStatus = TaskStatus;
   readonly TaskPriority = TaskPriority;
+
+  showDetailModal = false;
 
   onAssigneeChange(assigneeId: number | null): void {
     this.taskService
@@ -70,5 +74,22 @@ export class TaskCardComponent {
       default:
         return [];
     }
+  }
+
+  openDetailModal(): void {
+    this.showDetailModal = true;
+  }
+
+  closeDetailModal(): void {
+    this.showDetailModal = false;
+  }
+
+  isOverdue(): boolean {
+    if (!this.task.dueDate) return false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const dueDate = new Date(this.task.dueDate);
+    dueDate.setHours(0, 0, 0, 0);
+    return dueDate < today && this.task.status !== TaskStatus.COMPLETED;
   }
 }

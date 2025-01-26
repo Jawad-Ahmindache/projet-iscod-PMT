@@ -1,6 +1,8 @@
 package com.visiplus.pmt.service;
 
 import com.visiplus.pmt.dto.TaskDto;
+import com.visiplus.pmt.dto.TaskHistoryDto;
+import com.visiplus.pmt.dto.UpdateTaskDto;
 import com.visiplus.pmt.exception.PermissionDeniedException;
 import com.visiplus.pmt.model.*;
 import com.visiplus.pmt.repository.ProjectMemberRepository;
@@ -62,15 +64,40 @@ public class TaskService {
     }
 
     @Transactional
-    public TaskDto updateTask(Long projectId, Long taskId, Task updatedTask, User user) {
+    public TaskDto updateTask(Long projectId, Long taskId, UpdateTaskDto updateTaskDto, User user) {
         projectService.checkProjectAccess(projectId, user);
 
         Task task = findAndValidateTask(projectId, taskId);
-        TaskSnapshot snapshot = new TaskSnapshot(task);
+        Task.Status oldStatus = task.getStatus();
+        Task.Priority oldPriority = task.getPriority();
 
-        updateTaskFields(task, updatedTask);
+        if (updateTaskDto.getName() != null) {
+            task.setName(updateTaskDto.getName());
+            createHistoryEntry(task, user, String.format("Nom changé en '%s'", updateTaskDto.getName()));
+        }
+
+        if (updateTaskDto.getDescription() != null) {
+            task.setDescription(updateTaskDto.getDescription());
+            createHistoryEntry(task, user, "Description mise à jour");
+        }
+
+        if (updateTaskDto.getPriority() != null && !updateTaskDto.getPriority().equals(oldPriority)) {
+            task.setPriority(updateTaskDto.getPriority());
+            createHistoryEntry(task, user, String.format("Priorité changée en %s", updateTaskDto.getPriority()));
+        }
+
+        if (updateTaskDto.getDueDate() != null) {
+            task.setDueDate(updateTaskDto.getDueDate());
+            createHistoryEntry(task, user, "Date d'échéance mise à jour");
+        }
+
+        if (updateTaskDto.getStatus() != null && !updateTaskDto.getStatus().equals(oldStatus)) {
+            task.setStatus(updateTaskDto.getStatus());
+            createHistoryEntry(task, user, String.format("Statut changé en %s", updateTaskDto.getStatus()));
+        }
+
+        task.setUpdatedAt(LocalDateTime.now());
         Task savedTask = taskRepository.save(task);
-        createHistoryEntries(savedTask, snapshot, user);
 
         return TaskDto.fromEntity(savedTask);
     }
@@ -84,16 +111,6 @@ public class TaskService {
         }
 
         return task;
-    }
-
-    private void updateTaskFields(Task task, Task updates) {
-        Optional.ofNullable(updates.getName()).ifPresent(task::setName);
-        Optional.ofNullable(updates.getDescription()).ifPresent(task::setDescription);
-        Optional.ofNullable(updates.getPriority()).ifPresent(task::setPriority);
-        Optional.ofNullable(updates.getDueDate()).ifPresent(task::setDueDate);
-        Optional.ofNullable(updates.getStatus()).ifPresent(task::setStatus);
-        task.setAssignedUser(updates.getAssignedUser());
-        task.setUpdatedAt(LocalDateTime.now());
     }
 
     private void createHistoryEntries(Task task, TaskSnapshot snapshot, User user) {
@@ -186,20 +203,32 @@ public class TaskService {
     public TaskDto updateTaskStatus(Long projectId, Long taskId, Task.Status status, User user) {
         projectService.checkProjectAccess(projectId, user);
 
-        Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tâche non trouvée"));
+        Task task = findAndValidateTask(projectId, taskId);
+        Task.Status oldStatus = task.getStatus();
 
-        if (!task.getProject().getId().equals(projectId)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cette tâche n'appartient pas à ce projet");
+        if (!status.equals(oldStatus)) {
+            task.setStatus(status);
+            task.setUpdatedAt(LocalDateTime.now());
+            createHistoryEntry(task, user, String.format("Statut changé de %s à %s", oldStatus, status));
         }
 
-        task.setStatus(status);
-        task.setUpdatedAt(LocalDateTime.now());
+        return TaskDto.fromEntity(taskRepository.save(task));
+    }
 
-        Task savedTask = taskRepository.save(task);
-        createHistoryEntry(savedTask, user, String.format("Statut changé à %s", status));
+    @Transactional
+    public TaskDto updateTaskPriority(Long projectId, Long taskId, Task.Priority priority, User user) {
+        projectService.checkProjectAccess(projectId, user);
 
-        return TaskDto.fromEntity(savedTask);
+        Task task = findAndValidateTask(projectId, taskId);
+        Task.Priority oldPriority = task.getPriority();
+
+        if (!priority.equals(oldPriority)) {
+            task.setPriority(priority);
+            task.setUpdatedAt(LocalDateTime.now());
+            createHistoryEntry(task, user, String.format("Priorité changée de %s à %s", oldPriority, priority));
+        }
+
+        return TaskDto.fromEntity(taskRepository.save(task));
     }
    
 
@@ -271,5 +300,23 @@ public class TaskService {
         history.setChangeDescription(description);
         history.setChangedAt(LocalDateTime.now());
         taskHistoryRepository.save(history);
+    }
+
+    @Transactional(readOnly = true)
+    public TaskDto getTask(Long projectId, Long taskId, User user) {
+        projectService.checkProjectAccess(projectId, user);
+        Task task = findAndValidateTask(projectId, taskId);
+        return TaskDto.fromEntity(task);
+    }
+
+    @Transactional(readOnly = true)
+    public List<TaskHistoryDto> getTaskHistory(Long projectId, Long taskId, User user) {
+        projectService.checkProjectAccess(projectId, user);
+        Task task = findAndValidateTask(projectId, taskId);
+        
+        return taskHistoryRepository.findByTaskOrderByChangedAtDesc(task)
+            .stream()
+            .map(TaskHistoryDto::fromEntity)
+            .toList();
     }
 } 

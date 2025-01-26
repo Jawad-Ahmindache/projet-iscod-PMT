@@ -23,11 +23,17 @@ export const AUTH_API = {
     },
     tasks: {
       list: (projectId: number) => `${API_URL}/projects/${projectId}/tasks`,
+      get: (projectId: number, taskId: number) =>
+        `${API_URL}/projects/${projectId}/tasks/${taskId}`,
+      history: (projectId: number, taskId: number) =>
+        `${API_URL}/projects/${projectId}/tasks/${taskId}/history`,
       create: (projectId: number) => `${API_URL}/projects/${projectId}/tasks`,
       update: (projectId: number, taskId: number) =>
         `${API_URL}/projects/${projectId}/tasks/${taskId}`,
       updateStatus: (projectId: number, taskId: number) =>
         `${API_URL}/projects/${projectId}/tasks/${taskId}/status`,
+      updatePriority: (projectId: number, taskId: number) =>
+        `${API_URL}/projects/${projectId}/tasks/${taskId}/priority`,
       assign: (projectId: number, taskId: number) =>
         `${API_URL}/projects/${projectId}/tasks/${taskId}/assign`,
     },

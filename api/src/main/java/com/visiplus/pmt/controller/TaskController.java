@@ -1,6 +1,8 @@
 package com.visiplus.pmt.controller;
 
 import com.visiplus.pmt.dto.TaskDto;
+import com.visiplus.pmt.dto.UpdateTaskDto;
+import com.visiplus.pmt.dto.TaskHistoryDto;
 import com.visiplus.pmt.model.Task;
 import com.visiplus.pmt.model.User;
 import com.visiplus.pmt.service.TaskService;
@@ -43,10 +45,10 @@ public class TaskController {
     public ResponseEntity<TaskDto> updateTask(
             @PathVariable Long projectId,
             @PathVariable Long taskId,
-            @RequestBody Task task,
+            @RequestBody UpdateTaskDto updateTaskDto,
             @AuthenticationPrincipal User user
     ) {
-        return ResponseEntity.ok(taskService.updateTask(projectId, taskId, task, user));
+        return ResponseEntity.ok(taskService.updateTask(projectId, taskId, updateTaskDto, user));
     }
 
     @PutMapping("/{taskId}/status")
@@ -69,5 +71,36 @@ public class TaskController {
             @AuthenticationPrincipal User user
     ) {
         return ResponseEntity.ok(taskService.updateTaskAssignee(projectId, taskId, assigneeId, user));
+    }
+
+    @PutMapping("/{taskId}/priority")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<TaskDto> updateTaskPriority(
+            @PathVariable Long projectId,
+            @PathVariable Long taskId,
+            @RequestParam Task.Priority priority,
+            @AuthenticationPrincipal User user
+    ) {
+        return ResponseEntity.ok(taskService.updateTaskPriority(projectId, taskId, priority, user));
+    }
+
+    @GetMapping("/{taskId}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<TaskDto> getTask(
+            @PathVariable Long projectId,
+            @PathVariable Long taskId,
+            @AuthenticationPrincipal User user
+    ) {
+        return ResponseEntity.ok(taskService.getTask(projectId, taskId, user));
+    }
+
+    @GetMapping("/{taskId}/history")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<TaskHistoryDto>> getTaskHistory(
+            @PathVariable Long projectId,
+            @PathVariable Long taskId,
+            @AuthenticationPrincipal User user
+    ) {
+        return ResponseEntity.ok(taskService.getTaskHistory(projectId, taskId, user));
     }
 } 
