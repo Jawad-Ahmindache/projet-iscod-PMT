@@ -32,7 +32,7 @@ public class TaskService {
     private final UserRepository userRepository;
     private final RoleService roleService;
     private final EmailService emailService;
-    private final ProjectService projectService;
+    protected final ProjectService projectService;
 
     @Transactional(readOnly = true)
     public List<TaskDto> getTasksByProject(Long projectId, User user) {
