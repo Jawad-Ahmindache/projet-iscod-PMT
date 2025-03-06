@@ -1,0 +1,11 @@
+import { tuiCreateToken } from '@taiga-ui/cdk/utils/miscellaneous';
+export const TUI_EMAIL_PIPE_OPTIONS = tuiCreateToken([
+    'gmail.com',
+    'outlook.com',
+    'icloud.com',
+    'me.com',
+    'yahoo.com',
+    'mail.com',
+    'proton.me',
+]);
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZW1haWxzLm9wdGlvbnMuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi9wcm9qZWN0cy9raXQvcGlwZXMvZW1haWxzL2VtYWlscy5vcHRpb25zLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLE9BQU8sRUFBQyxjQUFjLEVBQUMsTUFBTSxtQ0FBbUMsQ0FBQztBQUVqRSxNQUFNLENBQUMsTUFBTSxzQkFBc0IsR0FBRyxjQUFjLENBQUM7SUFDakQsV0FBVztJQUNYLGFBQWE7SUFDYixZQUFZO0lBQ1osUUFBUTtJQUNSLFdBQVc7SUFDWCxVQUFVO0lBQ1YsV0FBVztDQUNkLENBQUMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7dHVpQ3JlYXRlVG9rZW59IGZyb20gJ0B0YWlnYS11aS9jZGsvdXRpbHMvbWlzY2VsbGFuZW91cyc7XG5cbmV4cG9ydCBjb25zdCBUVUlfRU1BSUxfUElQRV9PUFRJT05TID0gdHVpQ3JlYXRlVG9rZW4oW1xuICAgICdnbWFpbC5jb20nLFxuICAgICdvdXRsb29rLmNvbScsXG4gICAgJ2ljbG91ZC5jb20nLFxuICAgICdtZS5jb20nLFxuICAgICd5YWhvby5jb20nLFxuICAgICdtYWlsLmNvbScsXG4gICAgJ3Byb3Rvbi5tZScsXG5dKTtcbiJdfQ==

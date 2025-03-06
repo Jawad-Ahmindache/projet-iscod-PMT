@@ -1,0 +1,9 @@
+import type { Provider } from '@angular/core';
+import type { TuiAppearanceOptions } from '@taiga-ui/core/directives/appearance';
+import type { TuiSizeS, TuiSizeXL } from '@taiga-ui/core/types';
+export interface TuiBadgeOptions extends TuiAppearanceOptions {
+    readonly size: TuiSizeS | TuiSizeXL;
+}
+export declare const TUI_BADGE_DEFAULT_OPTIONS: TuiBadgeOptions;
+export declare const TUI_BADGE_OPTIONS: import("@angular/core").InjectionToken<TuiBadgeOptions>;
+export declare function tuiBadgeOptionsProvider(options: Partial<TuiBadgeOptions>): Provider;

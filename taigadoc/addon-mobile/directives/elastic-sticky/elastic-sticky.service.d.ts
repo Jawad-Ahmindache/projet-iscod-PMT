@@ -1,0 +1,12 @@
+import { Observable } from 'rxjs';
+import * as i0 from "@angular/core";
+export declare class TuiElasticStickyService extends Observable<number> {
+    private readonly injector;
+    private readonly el;
+    private readonly scrollRef;
+    private readonly destroyRef;
+    private readonly zone;
+    constructor();
+    static ɵfac: i0.ɵɵFactoryDeclaration<TuiElasticStickyService, never>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<TuiElasticStickyService>;
+}

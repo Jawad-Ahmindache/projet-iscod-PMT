@@ -1,0 +1,13 @@
+import type { Provider } from '@angular/core';
+import type { TuiBooleanHandler, TuiIdentityMatcher, TuiStringHandler } from '@taiga-ui/cdk/types';
+export interface TuiItemsHandlers<T> {
+    readonly disabledItemHandler: TuiBooleanHandler<T>;
+    readonly identityMatcher: TuiIdentityMatcher<T>;
+    readonly stringify: TuiStringHandler<T>;
+}
+export declare const TUI_DEFAULT_ITEMS_HANDLERS: TuiItemsHandlers<unknown>;
+/**
+ * Default items handlers for components
+ */
+export declare const TUI_ITEMS_HANDLERS: import("@angular/core").InjectionToken<TuiItemsHandlers<unknown>>;
+export declare function tuiItemsHandlersProvider<T>(options: Partial<TuiItemsHandlers<T>>): Provider;

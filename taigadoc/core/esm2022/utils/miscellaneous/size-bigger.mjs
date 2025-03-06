@@ -1,0 +1,19 @@
+const SIZES = {
+    xxs: 0,
+    xs: 1,
+    s: 2,
+    m: 3,
+    l: 4,
+    xl: 5,
+    xxl: 6,
+};
+/**
+ * Compares size constants to determine if first size is bigger than the second
+ *
+ * @param size size that we need to compare
+ * @param biggerThanSize size to compare with, 's' by default
+ */
+export function tuiSizeBigger(size, biggerThanSize = 's') {
+    return SIZES[size] > SIZES[biggerThanSize];
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2l6ZS1iaWdnZXIuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi9wcm9qZWN0cy9jb3JlL3V0aWxzL21pc2NlbGxhbmVvdXMvc2l6ZS1iaWdnZXIudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBRUEsTUFBTSxLQUFLLEdBQTRDO0lBQ25ELEdBQUcsRUFBRSxDQUFDO0lBQ04sRUFBRSxFQUFFLENBQUM7SUFDTCxDQUFDLEVBQUUsQ0FBQztJQUNKLENBQUMsRUFBRSxDQUFDO0lBQ0osQ0FBQyxFQUFFLENBQUM7SUFDSixFQUFFLEVBQUUsQ0FBQztJQUNMLEdBQUcsRUFBRSxDQUFDO0NBQ1QsQ0FBQztBQUVGOzs7OztHQUtHO0FBQ0gsTUFBTSxVQUFVLGFBQWEsQ0FDekIsSUFBNkIsRUFDN0IsaUJBQTBDLEdBQUc7SUFFN0MsT0FBTyxLQUFLLENBQUMsSUFBSSxDQUFDLEdBQUcsS0FBSyxDQUFDLGNBQWMsQ0FBQyxDQUFDO0FBQy9DLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgdHlwZSB7VHVpU2l6ZVhYTCwgVHVpU2l6ZVhYU30gZnJvbSAnQHRhaWdhLXVpL2NvcmUvdHlwZXMnO1xuXG5jb25zdCBTSVpFUzogUmVjb3JkPFR1aVNpemVYWEwgfCBUdWlTaXplWFhTLCBudW1iZXI+ID0ge1xuICAgIHh4czogMCxcbiAgICB4czogMSxcbiAgICBzOiAyLFxuICAgIG06IDMsXG4gICAgbDogNCxcbiAgICB4bDogNSxcbiAgICB4eGw6IDYsXG59O1xuXG4vKipcbiAqIENvbXBhcmVzIHNpemUgY29uc3RhbnRzIHRvIGRldGVybWluZSBpZiBmaXJzdCBzaXplIGlzIGJpZ2dlciB0aGFuIHRoZSBzZWNvbmRcbiAqXG4gKiBAcGFyYW0gc2l6ZSBzaXplIHRoYXQgd2UgbmVlZCB0byBjb21wYXJlXG4gKiBAcGFyYW0gYmlnZ2VyVGhhblNpemUgc2l6ZSB0byBjb21wYXJlIHdpdGgsICdzJyBieSBkZWZhdWx0XG4gKi9cbmV4cG9ydCBmdW5jdGlvbiB0dWlTaXplQmlnZ2VyKFxuICAgIHNpemU6IFR1aVNpemVYWEwgfCBUdWlTaXplWFhTLFxuICAgIGJpZ2dlclRoYW5TaXplOiBUdWlTaXplWFhMIHwgVHVpU2l6ZVhYUyA9ICdzJyxcbik6IGJvb2xlYW4ge1xuICAgIHJldHVybiBTSVpFU1tzaXplXSA+IFNJWkVTW2JpZ2dlclRoYW5TaXplXTtcbn1cbiJdfQ==

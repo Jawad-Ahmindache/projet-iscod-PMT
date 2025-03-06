@@ -1,0 +1,13 @@
+import { Observable } from 'rxjs';
+import * as i0 from "@angular/core";
+export declare class TuiCarouselDirective extends Observable<unknown> {
+    private readonly el;
+    private readonly visible$;
+    private readonly duration$;
+    private readonly running$;
+    private readonly output$;
+    constructor();
+    set duration(duration: number);
+    static ɵfac: i0.ɵɵFactoryDeclaration<TuiCarouselDirective, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<TuiCarouselDirective, never, never, { "duration": { "alias": "duration"; "required": false; }; }, {}, never, never, true, never>;
+}

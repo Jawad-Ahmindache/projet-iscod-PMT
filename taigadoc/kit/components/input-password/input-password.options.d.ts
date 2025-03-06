@@ -1,0 +1,24 @@
+import type { Provider } from '@angular/core';
+import type { TuiStringHandler } from '@taiga-ui/cdk/types';
+import type { TuiSizeL, TuiSizeS } from '@taiga-ui/core/types';
+/**
+ * @deprecated use {@link TuiPassword} with {@link TuiTextfield}
+ */
+export interface TuiInputPasswordOptions {
+    readonly icons: Readonly<{
+        hide: TuiStringHandler<TuiSizeL | TuiSizeS> | string;
+        show: TuiStringHandler<TuiSizeL | TuiSizeS> | string;
+    }>;
+}
+/**
+ * @deprecated use {@link TuiPassword} with {@link TuiTextfield}
+ */
+export declare const TUI_INPUT_PASSWORD_DEFAULT_OPTIONS: TuiInputPasswordOptions;
+/**
+ * @deprecated use {@link TuiPassword} with {@link TuiTextfield}
+ */
+export declare const TUI_INPUT_PASSWORD_OPTIONS: import("@angular/core").InjectionToken<TuiInputPasswordOptions>;
+/**
+ * @deprecated use {@link TuiPassword} with {@link TuiTextfield}
+ */
+export declare function tuiInputPasswordOptionsProvider(options: Partial<TuiInputPasswordOptions>): Provider;

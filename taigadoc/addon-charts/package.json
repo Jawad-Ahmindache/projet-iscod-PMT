@@ -1,0 +1,119 @@
+{
+  "name": "@taiga-ui/addon-charts",
+  "version": "4.19.0",
+  "description": "Extension package for Taiga UI that adds various charts, graphs and related components.",
+  "keywords": [
+    "angular",
+    "component",
+    "graph",
+    "chart",
+    "bar",
+    "diagram"
+  ],
+  "homepage": "https://github.com/taiga-family/taiga-ui",
+  "repository": "https://github.com/taiga-family/taiga-ui",
+  "license": "Apache-2.0",
+  "peerDependencies": {
+    "@angular/common": ">=16.0.0",
+    "@angular/core": ">=16.0.0",
+    "@ng-web-apis/common": "^4.11.1",
+    "@taiga-ui/cdk": "^4.19.0",
+    "@taiga-ui/core": "^4.19.0",
+    "@taiga-ui/polymorpheus": "^4.7.4"
+  },
+  "module": "fesm2022/taiga-ui-addon-charts.mjs",
+  "typings": "index.d.ts",
+  "exports": {
+    "./package.json": {
+      "default": "./package.json"
+    },
+    ".": {
+      "types": "./index.d.ts",
+      "esm2022": "./esm2022/taiga-ui-addon-charts.mjs",
+      "esm": "./esm2022/taiga-ui-addon-charts.mjs",
+      "default": "./fesm2022/taiga-ui-addon-charts.mjs"
+    },
+    "./components": {
+      "types": "./components/index.d.ts",
+      "esm2022": "./esm2022/components/taiga-ui-addon-charts-components.mjs",
+      "esm": "./esm2022/components/taiga-ui-addon-charts-components.mjs",
+      "default": "./fesm2022/taiga-ui-addon-charts-components.mjs"
+    },
+    "./types": {
+      "types": "./types/index.d.ts",
+      "esm2022": "./esm2022/types/taiga-ui-addon-charts-types.mjs",
+      "esm": "./esm2022/types/taiga-ui-addon-charts-types.mjs",
+      "default": "./fesm2022/taiga-ui-addon-charts-types.mjs"
+    },
+    "./utils": {
+      "types": "./utils/index.d.ts",
+      "esm2022": "./esm2022/utils/taiga-ui-addon-charts-utils.mjs",
+      "esm": "./esm2022/utils/taiga-ui-addon-charts-utils.mjs",
+      "default": "./fesm2022/taiga-ui-addon-charts-utils.mjs"
+    },
+    "./components/arc-chart": {
+      "types": "./components/arc-chart/index.d.ts",
+      "esm2022": "./esm2022/components/arc-chart/taiga-ui-addon-charts-components-arc-chart.mjs",
+      "esm": "./esm2022/components/arc-chart/taiga-ui-addon-charts-components-arc-chart.mjs",
+      "default": "./fesm2022/taiga-ui-addon-charts-components-arc-chart.mjs"
+    },
+    "./components/axes": {
+      "types": "./components/axes/index.d.ts",
+      "esm2022": "./esm2022/components/axes/taiga-ui-addon-charts-components-axes.mjs",
+      "esm": "./esm2022/components/axes/taiga-ui-addon-charts-components-axes.mjs",
+      "default": "./fesm2022/taiga-ui-addon-charts-components-axes.mjs"
+    },
+    "./components/bar": {
+      "types": "./components/bar/index.d.ts",
+      "esm2022": "./esm2022/components/bar/taiga-ui-addon-charts-components-bar.mjs",
+      "esm": "./esm2022/components/bar/taiga-ui-addon-charts-components-bar.mjs",
+      "default": "./fesm2022/taiga-ui-addon-charts-components-bar.mjs"
+    },
+    "./components/bar-chart": {
+      "types": "./components/bar-chart/index.d.ts",
+      "esm2022": "./esm2022/components/bar-chart/taiga-ui-addon-charts-components-bar-chart.mjs",
+      "esm": "./esm2022/components/bar-chart/taiga-ui-addon-charts-components-bar-chart.mjs",
+      "default": "./fesm2022/taiga-ui-addon-charts-components-bar-chart.mjs"
+    },
+    "./components/bar-set": {
+      "types": "./components/bar-set/index.d.ts",
+      "esm2022": "./esm2022/components/bar-set/taiga-ui-addon-charts-components-bar-set.mjs",
+      "esm": "./esm2022/components/bar-set/taiga-ui-addon-charts-components-bar-set.mjs",
+      "default": "./fesm2022/taiga-ui-addon-charts-components-bar-set.mjs"
+    },
+    "./components/legend-item": {
+      "types": "./components/legend-item/index.d.ts",
+      "esm2022": "./esm2022/components/legend-item/taiga-ui-addon-charts-components-legend-item.mjs",
+      "esm": "./esm2022/components/legend-item/taiga-ui-addon-charts-components-legend-item.mjs",
+      "default": "./fesm2022/taiga-ui-addon-charts-components-legend-item.mjs"
+    },
+    "./components/line-chart": {
+      "types": "./components/line-chart/index.d.ts",
+      "esm2022": "./esm2022/components/line-chart/taiga-ui-addon-charts-components-line-chart.mjs",
+      "esm": "./esm2022/components/line-chart/taiga-ui-addon-charts-components-line-chart.mjs",
+      "default": "./fesm2022/taiga-ui-addon-charts-components-line-chart.mjs"
+    },
+    "./components/line-days-chart": {
+      "types": "./components/line-days-chart/index.d.ts",
+      "esm2022": "./esm2022/components/line-days-chart/taiga-ui-addon-charts-components-line-days-chart.mjs",
+      "esm": "./esm2022/components/line-days-chart/taiga-ui-addon-charts-components-line-days-chart.mjs",
+      "default": "./fesm2022/taiga-ui-addon-charts-components-line-days-chart.mjs"
+    },
+    "./components/pie-chart": {
+      "types": "./components/pie-chart/index.d.ts",
+      "esm2022": "./esm2022/components/pie-chart/taiga-ui-addon-charts-components-pie-chart.mjs",
+      "esm": "./esm2022/components/pie-chart/taiga-ui-addon-charts-components-pie-chart.mjs",
+      "default": "./fesm2022/taiga-ui-addon-charts-components-pie-chart.mjs"
+    },
+    "./components/ring-chart": {
+      "types": "./components/ring-chart/index.d.ts",
+      "esm2022": "./esm2022/components/ring-chart/taiga-ui-addon-charts-components-ring-chart.mjs",
+      "esm": "./esm2022/components/ring-chart/taiga-ui-addon-charts-components-ring-chart.mjs",
+      "default": "./fesm2022/taiga-ui-addon-charts-components-ring-chart.mjs"
+    }
+  },
+  "sideEffects": false,
+  "dependencies": {
+    "tslib": ">=2.8.1"
+  }
+}

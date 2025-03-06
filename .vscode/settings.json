@@ -1,0 +1,7 @@
+{
+  "java.compile.autostart": true,
+  "java.autobuild.enabled": true,
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000,
+  "java.debug.settings.hotCodeReplace": "auto"
+}
