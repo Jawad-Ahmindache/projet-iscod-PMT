@@ -19,7 +19,7 @@ services:
       sh -c "cd /app &&
              service postgresql start &&
              chmod +x ./mvnw &&
-             ./mvnw spring-boot:run"
+             ./mvnw spring-boot:run "
   mailhog:
     image: mailhog/mailhog
     ports:
