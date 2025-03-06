@@ -1,0 +1,13 @@
+<div class="tabs">
+  <div class="tabs-header">
+    @for (tab of tabs; track tab.id) {
+    <button
+      class="tab-button"
+      [class.active]="tab.id === activeTab"
+      (click)="selectTab(tab.id)"
+    >
+      {{ tab.label }}
+    </button>
+    }
+  </div>
+</div>

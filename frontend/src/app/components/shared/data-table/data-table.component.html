@@ -1,0 +1,79 @@
+<div class="data-table-container">
+  @if (loading) {
+  <div class="loading-spinner">
+    <div class="spinner"></div>
+  </div>
+  }
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        @for (column of columns; track column.key) {
+        <th [class.sortable]="column.sortable" (click)="onSort(column)">
+          {{ column.label }}
+          @if (column.sortable) {
+          <i class="fas fa-sort"></i>
+          }
+        </th>
+        } @if (actions.length) {
+        <th class="actions-column">Actions</th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @if (data.length === 0) {
+      <tr>
+        <td
+          [attr.colspan]="columns.length + (actions.length ? 1 : 0)"
+          class="no-data"
+        >
+          Aucune donnée disponible
+        </td>
+      </tr>
+      } @for (item of data; track item.id) {
+      <tr>
+        @for (column of columns; track column.key) {
+        <td>{{ item[column.key] }}</td>
+        } @if (actions.length) {
+        <td class="actions-cell">
+          @for (action of actions; track action.label) {
+          <button
+            class="action-button"
+            (click)="action.action(item)"
+            [title]="action.label"
+          >
+            @if (action.icon) {
+            <i [class]="action.icon"></i>
+            }
+            <span>{{ action.label }}</span>
+          </button>
+          }
+        </td>
+        }
+      </tr>
+      }
+    </tbody>
+  </table>
+
+  @if (totalPages > 1) {
+  <div class="pagination">
+    <button
+      class="pagination-button"
+      [disabled]="currentPage === 1"
+      (click)="onPageChange(currentPage - 1)"
+    >
+      <i class="fas fa-chevron-left"></i>
+    </button>
+
+    <span class="page-info"> Page {{ currentPage }} sur {{ totalPages }} </span>
+
+    <button
+      class="pagination-button"
+      [disabled]="currentPage === totalPages"
+      (click)="onPageChange(currentPage + 1)"
+    >
+      <i class="fas fa-chevron-right"></i>
+    </button>
+  </div>
+  }
+</div>

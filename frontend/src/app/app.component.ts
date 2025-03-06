@@ -1,12 +1,15 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { TuiRoot } from '@taiga-ui/core';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  standalone: true,
+  imports: [RouterOutlet, TuiRoot],
+  template: `
+    <tui-root>
+      <router-outlet></router-outlet>
+    </tui-root>
+  `,
 })
-export class AppComponent {
-  title = 'frontend';
-}
+export class AppComponent {}

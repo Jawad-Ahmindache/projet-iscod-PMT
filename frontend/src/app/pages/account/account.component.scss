@@ -1,0 +1,36 @@
+:host {
+  display: block;
+  min-height: 100%;
+  background-color: var(--tui-base-01);
+}
+
+.container {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.tui-form {
+  &__row {
+    margin-bottom: 1.5rem;
+  }
+
+  &__error {
+    color: var(--tui-negative);
+    margin: 0.5rem 0;
+  }
+
+  &__success {
+    color: var(--tui-positive);
+    margin: 0.5rem 0;
+  }
+
+  &__button {
+    width: 100%;
+    margin-top: 1.5rem;
+  }
+}
+
+tui-input,
+tui-input-password {
+  width: 100%;
+}

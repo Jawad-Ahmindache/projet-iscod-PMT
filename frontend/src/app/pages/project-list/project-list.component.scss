@@ -1,0 +1,82 @@
+.project-list {
+  padding: 2rem;
+
+  .project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+
+    h1 {
+      color: #333;
+      font-size: 2rem;
+      margin: 0;
+    }
+
+    .create-button {
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: #2563eb;
+      }
+
+      i {
+        font-size: 1rem;
+      }
+    }
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .project-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+    cursor: pointer;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    h3 {
+      margin: 0 0 1rem;
+      color: #2c3e50;
+      font-size: 1.25rem;
+    }
+
+    p {
+      color: #666;
+      margin: 0 0 1rem;
+      line-height: 1.5;
+    }
+
+    .project-footer {
+      margin-top: auto;
+      padding-top: 1rem;
+      border-top: 1px solid #eee;
+
+      .date {
+        color: #999;
+        font-size: 0.875rem;
+      }
+    }
+  }
+}

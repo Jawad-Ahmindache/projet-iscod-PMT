@@ -1,0 +1,32 @@
+<div class="project-detail">
+  @if (project) {
+  <div class="project-header">
+    <h1>{{ project.name }}</h1>
+    @if (project.description) {
+    <p class="description">{{ project.description }}</p>
+    }
+  </div>
+
+  <app-tabs
+    [tabs]="tabs"
+    [activeTab]="activeTab"
+    (tabChange)="onTabChange($event)"
+  ></app-tabs>
+  <!-- TODO: add a form to create a new task -->
+  <div class="tab-content">
+    @if (activeTab === 'tasks') {
+    <app-task-list [projectId]="project.id" [members]="members"></app-task-list>
+    } @if (activeTab === 'members') {
+    <app-data-table
+      [data]="members"
+      [columns]="[
+        { key: 'username', label: 'Nom d\'utilisateur' },
+        { key: 'email', label: 'Email' },
+        { key: 'role', label: 'Rôle' },
+        { key: 'joinedAt', label: 'Date d\'ajout' }
+      ]"
+    ></app-data-table>
+    }
+  </div>
+  }
+</div>

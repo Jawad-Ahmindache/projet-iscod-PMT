@@ -1,0 +1,79 @@
+<div class="task-card" (mouseenter)="onMouseEnter()">
+  <div class="task-header">
+    <div class="task-title">
+      <h4>{{ task.name }}</h4>
+      <button class="detail-button" (click)="openDetailModal()">Voir</button>
+    </div>
+    <div class="task-priority">
+      <div class="priority-options">
+        <label class="priority-option">
+          <input
+            type="radio"
+            [name]="'priority-' + task.id"
+            [value]="TaskPriority.LOW"
+            [checked]="task.priority === TaskPriority.LOW"
+            (change)="onPriorityChange(TaskPriority.LOW)"
+          />
+          <span class="priority-label low">Basse</span>
+        </label>
+        <label class="priority-option">
+          <input
+            type="radio"
+            [name]="'priority-' + task.id"
+            [value]="TaskPriority.MEDIUM"
+            [checked]="task.priority === TaskPriority.MEDIUM"
+            (change)="onPriorityChange(TaskPriority.MEDIUM)"
+          />
+          <span class="priority-label medium">Moyenne</span>
+        </label>
+        <label class="priority-option">
+          <input
+            type="radio"
+            [name]="'priority-' + task.id"
+            [value]="TaskPriority.HIGH"
+            [checked]="task.priority === TaskPriority.HIGH"
+            (change)="onPriorityChange(TaskPriority.HIGH)"
+          />
+          <span class="priority-label high">Haute</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="task-info">
+    <div class="task-assignee">
+      <select
+        [ngModel]="task.assignedUserId"
+        (ngModelChange)="onAssigneeChange($event)"
+      >
+        <option [ngValue]="null">Non assigné</option>
+        @for (member of members; track member.id) {
+        <option [ngValue]="member.userId">{{ member.username }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <div class="task-actions">
+    @for (action of getStatusActions(); track action.status) {
+    <button
+      [class]="'status-button ' + action.status.toLowerCase()"
+      (click)="onStatusChange(action.status)"
+    >
+      {{ action.label }}
+    </button>
+    }
+  </div>
+
+  @if (showDetailModal) {
+  <app-modal title="Détails de la tâche" (close)="closeDetailModal()">
+    <app-task-detail
+      [task]="task"
+      (taskUpdated)="taskUpdated.emit()"
+    ></app-task-detail>
+  </app-modal>
+  } @if (isOverdue()) {
+  <br />
+  <span class="overdue-label">Arrivé à échéance</span>
+  }
+</div>

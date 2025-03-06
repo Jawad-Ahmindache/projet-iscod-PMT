@@ -24,11 +24,19 @@ RUN export $(cat /app/.env | xargs) && \
 # Configure PostgreSQL
 USER postgres
 RUN export $(cat /app/.env | xargs) && \
+    if [ -z "$DB_NAME" ] || [ -z "$DB_USER" ] || [ -z "$DB_PASSWORD" ]; then \
+        echo "Error: Database environment variables are not set correctly" && \
+        echo "DB_NAME=$DB_NAME" && \
+        echo "DB_USER=$DB_USER" && \
+        echo "DB_PASSWORD=$DB_PASSWORD" && \
+        exit 1; \
+    fi && \
     /etc/init.d/postgresql start && \
     echo "host all all 0.0.0.0/0 md5" >> /etc/postgresql/16/main/pg_hba.conf && \
     echo "listen_addresses='*'" >> /etc/postgresql/16/main/postgresql.conf && \
-    psql --command "CREATE USER $DB_USER WITH SUPERUSER PASSWORD '$DB_PASSWORD';" && \
-    createdb -O $DB_USER $DB_NAME && \
+    psql --command "SELECT 1 FROM pg_roles WHERE rolname = '$DB_USER'" | grep -q 1 || psql --command "CREATE USER $DB_USER WITH SUPERUSER PASSWORD '$DB_PASSWORD';" && \
+    psql --command "SELECT 1 FROM pg_database WHERE datname = '$DB_NAME'" | grep -q 1 || psql -c "CREATE DATABASE $DB_NAME;" && \
+    psql -c "ALTER DATABASE $DB_NAME OWNER TO $DB_USER;" && \
     /etc/init.d/postgresql stop
 
 USER root

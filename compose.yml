@@ -7,6 +7,11 @@ services:
     ports:
       - "8080:8080"
       - "5432:5432"
+      - "35729:35729"
+    environment:
+      - SPRING_DEVTOOLS_REMOTE_SECRET=mysecret
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
+      - SPRING_DEVTOOLS_LIVERELOAD_ENABLED=true
     volumes:
       - ./api:/app
       - pgdata:/var/lib/postgresql/16/main
@@ -14,8 +19,12 @@ services:
       sh -c "cd /app &&
              service postgresql start &&
              chmod +x ./mvnw &&
-             mvn install &&
-             ./mvnw spring-boot:run"
+             ./mvnw spring-boot:run "
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
   frontend:
     build:
       dockerfile: ./.docker/frontend.dockerfile
@@ -23,8 +32,6 @@ services:
       - "4200:4200"
     volumes:
       - ./frontend:/app
-    env_file:
-      - ./frontend/.env
     command: >
       sh -c "cd /app &&
              npm install &&
