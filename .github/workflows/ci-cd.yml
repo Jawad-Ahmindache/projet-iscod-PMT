@@ -32,7 +32,6 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -44,8 +43,9 @@ jobs:
         run: |
           docker build -t api-image -f .docker/api.dockerfile .
           docker save api-image > api-image.tar
+          
        - name: Build Frontend Docker image
-        run: |
+         run: |
           docker build -t frontend-image -f .docker/frontend.dockerfile .
           # Extraire les fichiers de build du conteneur
           docker create --name frontend-container frontend-image
@@ -63,6 +63,7 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           source: "frontend-dist.tar.gz"
           target: "/tmp"
+          
       - name: Transfer Docker image to server
         uses: appleboy/scp-action@master
         with:
