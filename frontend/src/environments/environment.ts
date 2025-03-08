@@ -1,4 +1,4 @@
 export const environment = {
-  production: false,
+  production: true,
   apiUrl: 'http://jawad-ahmin.fr:8080/api',
 } as const;
