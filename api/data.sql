@@ -1,311 +1,80 @@
-/*
- Navicat Premium Data Transfer
+-- Suppression des données existantes dans l'ordre inverse des dépendances
+DELETE FROM task_histories;
+DELETE FROM notifications;
+DELETE FROM tasks;
+DELETE FROM project_members;
+DELETE FROM projects;
+DELETE FROM users;
 
- Source Server         : 217.160.49.17_5432
- Source Server Type    : PostgreSQL
- Source Server Version : 160008 (160008)
- Source Host           : 217.160.49.17:5432
- Source Catalog        : pmt
- Source Schema         : public
+-- Insertion des données dans l'ordre des dépendances
+-- 1. Utilisateurs (table indépendante)
+INSERT INTO users (id, username, email, password, created_at, updated_at) VALUES
+(1, 'admin', 'admin@example.com', '$2a$10$mXQZbpRTEhtO2wTEyKnEJO1LTMnHxiAvr4Rtvfl4PZwo7XAofRTjq', NOW(), NOW()), -- password: admin123
+(2, 'alice', 'alice@example.com', '$2a$10$mXQZbpRTEhtO2wTEyKnEJO1LTMnHxiAvr4Rtvfl4PZwo7XAofRTjq', NOW(), NOW()),
+(3, 'bob', 'bob@example.com', '$2a$10$mXQZbpRTEhtO2wTEyKnEJO1LTMnHxiAvr4Rtvfl4PZwo7XAofRTjq', NOW(), NOW()),
+(4, 'charlie', 'charlie@example.com', '$2a$10$mXQZbpRTEhtO2wTEyKnEJO1LTMnHxiAvr4Rtvfl4PZwo7XAofRTjq', NOW(), NOW()),
+(5, 'david', 'david@example.com', '$2a$10$mXQZbpRTEhtO2wTEyKnEJO1LTMnHxiAvr4Rtvfl4PZwo7XAofRTjq', NOW(), NOW()),
+(6, 'emma', 'emma@example.com', '$2a$10$mXQZbpRTEhtO2wTEyKnEJO1LTMnHxiAvr4Rtvfl4PZwo7XAofRTjq', NOW(), NOW());
 
- Target Server Type    : PostgreSQL
- Target Server Version : 160008 (160008)
- File Encoding         : 65001
+-- 2. Projets (dépend des utilisateurs)
+INSERT INTO projects (id, name, description, start_date, admin_id, created_at, updated_at) VALUES
+(1, 'Projet E-commerce', 'Développement d''une plateforme e-commerce complète', '2024-01-01', 1, NOW(), NOW()),
+(2, 'Application Mobile', 'Application mobile de gestion de tâches', '2024-02-01', 2, NOW(), NOW()),
+(3, 'Refonte Site Web', 'Refonte complète du site web corporate', '2024-03-01', 3, NOW(), NOW());
 
- Date: 08/03/2025 15:26:36
-*/
+-- 3. Membres des projets (dépend des projets et utilisateurs)
+INSERT INTO project_members (id, project_id, user_id, role, joined_at) VALUES
+-- Projet E-commerce
+(1, 1, 1, 0, NOW()),      -- admin est admin (0)
+(2, 1, 2, 1, NOW()),      -- alice est membre (1)
+(3, 1, 3, 2, NOW()),      -- bob est observateur (2)
+-- Application Mobile
+(4, 2, 2, 0, NOW()),      -- alice est admin (0)
+(5, 2, 3, 1, NOW()),      -- bob est membre (1)
+(6, 2, 4, 1, NOW()),      -- charlie est membre (1)
+(7, 2, 5, 2, NOW()),      -- david est observateur (2)
+-- Refonte Site Web
+(8, 3, 3, 0, NOW()),      -- bob est admin (0)
+(9, 3, 4, 1, NOW()),      -- charlie est membre (1)
+(10, 3, 6, 1, NOW());     -- emma est membre (1)
 
+-- 4. Tâches (dépend des projets et utilisateurs)
+INSERT INTO tasks (id, project_id, name, description, due_date, priority, status, assigned_user_id, created_at, updated_at) VALUES
+-- Projet E-commerce
+(1, 1, 'Configuration du serveur', 'Mise en place de l''infrastructure serveur', '2024-01-15', 2, 0, 2, NOW(), NOW()),          -- TODO, HIGH, assignée à Alice
+(2, 1, 'Développement Frontend', 'Création des interfaces utilisateur', '2024-02-01', 1, 1, 2, NOW(), NOW()),                   -- IN_PROGRESS, MEDIUM, assignée à Alice
+(3, 1, 'Intégration API Paiement', 'Intégration de Stripe', '2024-02-15', 2, 0, 1, NOW(), NOW()),                             -- TODO, HIGH, assignée à Admin
+-- Application Mobile
+(4, 2, 'Design UI/UX', 'Création des maquettes', '2024-02-15', 0, 2, 4, NOW(), NOW()),                                        -- COMPLETED, LOW, assignée à Charlie
+(5, 2, 'Développement iOS', 'Développement de l''app iOS', '2024-03-01', 2, 1, 3, NOW(), NOW()),                               -- IN_PROGRESS, HIGH, assignée à Bob
+(6, 2, 'Développement Android', 'Développement de l''app Android', '2024-03-15', 2, 0, 2, NOW(), NOW()),                       -- TODO, HIGH, assignée à Alice
+-- Refonte Site Web
+(7, 3, 'Analyse des besoins', 'Analyse des besoins clients', '2024-03-10', 1, 2, 4, NOW(), NOW()),                            -- COMPLETED, MEDIUM, assignée à Charlie
+(8, 3, 'Design System', 'Création du design system', '2024-03-20', 2, 1, 6, NOW(), NOW()),                                     -- IN_PROGRESS, HIGH, assignée à Emma
+(9, 3, 'Développement Frontend', 'Intégration des composants', '2024-04-01', 1, 0, 3, NOW(), NOW());                          -- TODO, MEDIUM, assignée à Bob
 
--- ----------------------------
--- Sequence structure for notifications_id_seq
--- ----------------------------
-DROP SEQUENCE IF EXISTS "public"."notifications_id_seq";
-CREATE SEQUENCE "public"."notifications_id_seq" 
-INCREMENT 1
-MINVALUE  1
-MAXVALUE 9223372036854775807
-START 1
-CACHE 1;
+-- 5. Historique des tâches (dépend des tâches et utilisateurs)
+INSERT INTO task_histories (id, task_id, changed_by_id, change_description, changed_at) VALUES
+(1, 1, 1, 'Tâche créée', NOW()),
+(2, 2, 1, 'Tâche créée', NOW()),
+(3, 2, 2, 'Statut changé à EN_COURS', NOW()),
+(4, 3, 1, 'Tâche créée', NOW()),
+(5, 4, 2, 'Tâche créée', NOW()),
+(6, 4, 4, 'Tâche marquée comme terminée', NOW()),
+(7, 5, 2, 'Tâche créée', NOW()),
+(8, 5, 3, 'Statut changé à EN_COURS', NOW()),
+(9, 6, 2, 'Tâche créée', NOW()),
+(10, 7, 3, 'Tâche créée', NOW()),
+(11, 7, 4, 'Tâche marquée comme terminée', NOW()),
+(12, 8, 3, 'Tâche créée', NOW()),
+(13, 8, 6, 'Statut changé à EN_COURS', NOW()),
+(14, 9, 3, 'Tâche créée', NOW());
 
--- ----------------------------
--- Sequence structure for project_members_id_seq
--- ----------------------------
-DROP SEQUENCE IF EXISTS "public"."project_members_id_seq";
-CREATE SEQUENCE "public"."project_members_id_seq" 
-INCREMENT 1
-MINVALUE  1
-MAXVALUE 9223372036854775807
-START 1
-CACHE 1;
-
--- ----------------------------
--- Sequence structure for projects_id_seq
--- ----------------------------
-DROP SEQUENCE IF EXISTS "public"."projects_id_seq";
-CREATE SEQUENCE "public"."projects_id_seq" 
-INCREMENT 1
-MINVALUE  1
-MAXVALUE 9223372036854775807
-START 1
-CACHE 1;
-
--- ----------------------------
--- Sequence structure for task_histories_id_seq
--- ----------------------------
-DROP SEQUENCE IF EXISTS "public"."task_histories_id_seq";
-CREATE SEQUENCE "public"."task_histories_id_seq" 
-INCREMENT 1
-MINVALUE  1
-MAXVALUE 9223372036854775807
-START 1
-CACHE 1;
-
--- ----------------------------
--- Sequence structure for tasks_id_seq
--- ----------------------------
-DROP SEQUENCE IF EXISTS "public"."tasks_id_seq";
-CREATE SEQUENCE "public"."tasks_id_seq" 
-INCREMENT 1
-MINVALUE  1
-MAXVALUE 9223372036854775807
-START 1
-CACHE 1;
-
--- ----------------------------
--- Sequence structure for users_id_seq
--- ----------------------------
-DROP SEQUENCE IF EXISTS "public"."users_id_seq";
-CREATE SEQUENCE "public"."users_id_seq" 
-INCREMENT 1
-MINVALUE  1
-MAXVALUE 9223372036854775807
-START 1
-CACHE 1;
-
--- ----------------------------
--- Table structure for notifications
--- ----------------------------
-DROP TABLE IF EXISTS "public"."notifications";
-CREATE TABLE "public"."notifications" (
-  "id" int8 NOT NULL DEFAULT nextval('notifications_id_seq'::regclass),
-  "created_at" timestamp(6),
-  "is_read" bool,
-  "message" varchar(255) COLLATE "pg_catalog"."default" NOT NULL,
-  "title" varchar(255) COLLATE "pg_catalog"."default" NOT NULL,
-  "user_id" int8 NOT NULL
-)
-;
-
--- ----------------------------
--- Records of notifications
--- ----------------------------
-
--- ----------------------------
--- Table structure for project_members
--- ----------------------------
-DROP TABLE IF EXISTS "public"."project_members";
-CREATE TABLE "public"."project_members" (
-  "id" int8 NOT NULL DEFAULT nextval('project_members_id_seq'::regclass),
-  "joined_at" timestamp(6) NOT NULL,
-  "role" int2 NOT NULL,
-  "project_id" int8 NOT NULL,
-  "user_id" int8 NOT NULL
-)
-;
-
--- ----------------------------
--- Records of project_members
--- ----------------------------
-
--- ----------------------------
--- Table structure for projects
--- ----------------------------
-DROP TABLE IF EXISTS "public"."projects";
-CREATE TABLE "public"."projects" (
-  "id" int8 NOT NULL DEFAULT nextval('projects_id_seq'::regclass),
-  "created_at" timestamp(6),
-  "description" text COLLATE "pg_catalog"."default",
-  "name" varchar(255) COLLATE "pg_catalog"."default" NOT NULL,
-  "start_date" date,
-  "updated_at" timestamp(6)
-)
-;
-
--- ----------------------------
--- Records of projects
--- ----------------------------
-
--- ----------------------------
--- Table structure for task_histories
--- ----------------------------
-DROP TABLE IF EXISTS "public"."task_histories";
-CREATE TABLE "public"."task_histories" (
-  "id" int8 NOT NULL DEFAULT nextval('task_histories_id_seq'::regclass),
-  "change_description" varchar(255) COLLATE "pg_catalog"."default" NOT NULL,
-  "changed_at" timestamp(6) NOT NULL,
-  "changed_by_id" int8 NOT NULL,
-  "task_id" int8 NOT NULL
-)
-;
-
--- ----------------------------
--- Records of task_histories
--- ----------------------------
-
--- ----------------------------
--- Table structure for tasks
--- ----------------------------
-DROP TABLE IF EXISTS "public"."tasks";
-CREATE TABLE "public"."tasks" (
-  "id" int8 NOT NULL DEFAULT nextval('tasks_id_seq'::regclass),
-  "created_at" timestamp(6),
-  "description" varchar(255) COLLATE "pg_catalog"."default",
-  "due_date" date,
-  "name" varchar(255) COLLATE "pg_catalog"."default" NOT NULL,
-  "priority" int2 NOT NULL,
-  "status" int2 NOT NULL,
-  "updated_at" timestamp(6),
-  "assigned_user_id" int8,
-  "project_id" int8 NOT NULL
-)
-;
-
--- ----------------------------
--- Records of tasks
--- ----------------------------
-
--- ----------------------------
--- Table structure for users
--- ----------------------------
-DROP TABLE IF EXISTS "public"."users";
-CREATE TABLE "public"."users" (
-  "id" int8 NOT NULL DEFAULT nextval('users_id_seq'::regclass),
-  "created_at" timestamp(6),
-  "email" varchar(100) COLLATE "pg_catalog"."default",
-  "password" varchar(120) COLLATE "pg_catalog"."default",
-  "updated_at" timestamp(6),
-  "username" varchar(50) COLLATE "pg_catalog"."default"
-)
-;
-
--- ----------------------------
--- Records of users
--- ----------------------------
-INSERT INTO "public"."users" VALUES (1, '2025-03-08 14:24:38.370818', 'DSFFDSSD@M.COM', '$2a$10$Dw0KVAzalCyFREJKNM2PNeDec7xoJf4kwHCGNh/p.LfJvChundiNm', '2025-03-08 14:24:38.370851', 'DSFFDSS');
-
--- ----------------------------
--- Alter sequences owned by
--- ----------------------------
-ALTER SEQUENCE "public"."notifications_id_seq"
-OWNED BY "public"."notifications"."id";
-SELECT setval('"public"."notifications_id_seq"', 1, false);
-
--- ----------------------------
--- Alter sequences owned by
--- ----------------------------
-ALTER SEQUENCE "public"."project_members_id_seq"
-OWNED BY "public"."project_members"."id";
-SELECT setval('"public"."project_members_id_seq"', 1, false);
-
--- ----------------------------
--- Alter sequences owned by
--- ----------------------------
-ALTER SEQUENCE "public"."projects_id_seq"
-OWNED BY "public"."projects"."id";
-SELECT setval('"public"."projects_id_seq"', 1, false);
-
--- ----------------------------
--- Alter sequences owned by
--- ----------------------------
-ALTER SEQUENCE "public"."task_histories_id_seq"
-OWNED BY "public"."task_histories"."id";
-SELECT setval('"public"."task_histories_id_seq"', 1, false);
-
--- ----------------------------
--- Alter sequences owned by
--- ----------------------------
-ALTER SEQUENCE "public"."tasks_id_seq"
-OWNED BY "public"."tasks"."id";
-SELECT setval('"public"."tasks_id_seq"', 1, false);
-
--- ----------------------------
--- Alter sequences owned by
--- ----------------------------
-ALTER SEQUENCE "public"."users_id_seq"
-OWNED BY "public"."users"."id";
-SELECT setval('"public"."users_id_seq"', 1, true);
-
--- ----------------------------
--- Primary Key structure for table notifications
--- ----------------------------
-ALTER TABLE "public"."notifications" ADD CONSTRAINT "notifications_pkey" PRIMARY KEY ("id");
-
--- ----------------------------
--- Uniques structure for table project_members
--- ----------------------------
-ALTER TABLE "public"."project_members" ADD CONSTRAINT "ukaydweb1re2g5786xaugww4u0" UNIQUE ("project_id", "user_id");
-
--- ----------------------------
--- Checks structure for table project_members
--- ----------------------------
-ALTER TABLE "public"."project_members" ADD CONSTRAINT "project_members_role_check" CHECK (role >= 0 AND role <= 2);
-
--- ----------------------------
--- Primary Key structure for table project_members
--- ----------------------------
-ALTER TABLE "public"."project_members" ADD CONSTRAINT "project_members_pkey" PRIMARY KEY ("id");
-
--- ----------------------------
--- Primary Key structure for table projects
--- ----------------------------
-ALTER TABLE "public"."projects" ADD CONSTRAINT "projects_pkey" PRIMARY KEY ("id");
-
--- ----------------------------
--- Primary Key structure for table task_histories
--- ----------------------------
-ALTER TABLE "public"."task_histories" ADD CONSTRAINT "task_histories_pkey" PRIMARY KEY ("id");
-
--- ----------------------------
--- Checks structure for table tasks
--- ----------------------------
-ALTER TABLE "public"."tasks" ADD CONSTRAINT "tasks_priority_check" CHECK (priority >= 0 AND priority <= 2);
-ALTER TABLE "public"."tasks" ADD CONSTRAINT "tasks_status_check" CHECK (status >= 0 AND status <= 2);
-
--- ----------------------------
--- Primary Key structure for table tasks
--- ----------------------------
-ALTER TABLE "public"."tasks" ADD CONSTRAINT "tasks_pkey" PRIMARY KEY ("id");
-
--- ----------------------------
--- Uniques structure for table users
--- ----------------------------
-ALTER TABLE "public"."users" ADD CONSTRAINT "uk_6dotkott2kjsp8vw4d0m25fb7" UNIQUE ("email");
-ALTER TABLE "public"."users" ADD CONSTRAINT "uk_r43af9ap4edm43mmtq01oddj6" UNIQUE ("username");
-
--- ----------------------------
--- Primary Key structure for table users
--- ----------------------------
-ALTER TABLE "public"."users" ADD CONSTRAINT "users_pkey" PRIMARY KEY ("id");
-
--- ----------------------------
--- Foreign Keys structure for table notifications
--- ----------------------------
-ALTER TABLE "public"."notifications" ADD CONSTRAINT "fk9y21adhxn0ayjhfocscqox7bh" FOREIGN KEY ("user_id") REFERENCES "public"."users" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
-
--- ----------------------------
--- Foreign Keys structure for table project_members
--- ----------------------------
-ALTER TABLE "public"."project_members" ADD CONSTRAINT "fkdki1sp2homqsdcvqm9yrix31g" FOREIGN KEY ("project_id") REFERENCES "public"."projects" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
-ALTER TABLE "public"."project_members" ADD CONSTRAINT "fkgul2el0qjk5lsvig3wgajwm77" FOREIGN KEY ("user_id") REFERENCES "public"."users" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
-
--- ----------------------------
--- Foreign Keys structure for table task_histories
--- ----------------------------
-ALTER TABLE "public"."task_histories" ADD CONSTRAINT "fk81fs5c0tfi6jfp04q0s9sl4n1" FOREIGN KEY ("changed_by_id") REFERENCES "public"."users" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
-ALTER TABLE "public"."task_histories" ADD CONSTRAINT "fkmacu1ui1wsdfvrow9y358v5u5" FOREIGN KEY ("task_id") REFERENCES "public"."tasks" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
-
--- ----------------------------
--- Foreign Keys structure for table tasks
--- ----------------------------
-ALTER TABLE "public"."tasks" ADD CONSTRAINT "fk447x172gvsq2ajfbcenhtkhc8" FOREIGN KEY ("assigned_user_id") REFERENCES "public"."users" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
-ALTER TABLE "public"."tasks" ADD CONSTRAINT "fksfhn82y57i3k9uxww1s007acc" FOREIGN KEY ("project_id") REFERENCES "public"."projects" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+-- 6. Notifications (dépend des utilisateurs)
+INSERT INTO notifications (id, user_id, title, message, created_at, is_read) VALUES
+(1, 2, 'Nouvelle tâche assignée', 'Vous avez été assigné à la tâche "Configuration du serveur"', NOW() - INTERVAL '3 day', false),
+(2, 2, 'Modification de priorité', 'La priorité de la tâche "Développement Frontend" a été modifiée', NOW() - INTERVAL '2 day', false),
+(3, 3, 'Nouvelle tâche assignée', 'Vous avez été assigné à la tâche "Développement iOS"', NOW() - INTERVAL '2 day', true),
+(4, 3, 'Ajout au projet', 'Vous avez été ajouté au projet "Refonte Site Web"', NOW() - INTERVAL '1 day', false),
+(5, 4, 'Tâche terminée', 'La tâche "Design UI/UX" a été marquée comme terminée', NOW(), false),
+(6, 6, 'Modification de priorité', 'La priorité de la tâche "Design System" a été augmentée', NOW() - INTERVAL '12 hour', false); 
